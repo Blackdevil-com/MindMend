@@ -43,25 +43,25 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal Dialog */}
       <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
         <div
-          className={`relative transform overflow-hidden rounded-2xl bg-[#0F172A] border border-slate-700/80 text-left shadow-2xl transition-all sm:my-8 w-full ${maxWidthClass} p-6 sm:p-7 z-10`}
+          className={`relative transform overflow-hidden rounded-3xl bg-white border border-purple-100 text-left shadow-2xl transition-all sm:my-8 w-full ${maxWidthClass} p-6 sm:p-7 z-10`}
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-start justify-between pb-4 border-b border-slate-800">
+          <div className="flex items-start justify-between pb-4 border-b border-purple-100">
             <div>
-              <h3 className="text-lg font-bold text-white font-display">{title}</h3>
-              {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+              <h3 className="text-lg font-black text-slate-900 font-display">{title}</h3>
+              {subtitle && <p className="text-xs text-slate-500 font-medium mt-0.5">{subtitle}</p>}
             </div>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="p-1 rounded-xl text-slate-400 hover:text-[#6A1B9A] hover:bg-purple-50 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

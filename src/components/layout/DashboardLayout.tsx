@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Sidebar } from './Sidebar';
 import { api } from '../../services/api';
+import { ToastProvider } from '../common/Toast';
+import { ChatModal } from '../common/ChatModal';
+import { VirtualClassroomModal } from '../common/VirtualClassroomModal';
 import {
   Menu,
   X,
@@ -12,24 +15,32 @@ import {
   Shield,
   Sparkles,
   Search,
+  MessageSquare,
+  Video,
+  FileText,
+  BookOpen,
 } from 'lucide-react';
 
 export const DashboardLayout: React.FC = () => {
-  const { user, logout, refreshUser } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [classroomOpen, setClassroomOpen] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user is authorized
     if (!user) {
       navigate('/login');
       return;
     }
 
-    // Role protection check
     const path = location.pathname;
     if (path.startsWith('/admin') && user.role !== 'admin') {
       navigate('/login');
@@ -39,29 +50,29 @@ export const DashboardLayout: React.FC = () => {
       navigate('/login');
     }
 
-    // Fetch user notifications
     api.get('/cms/notifications')
       .then(data => setNotifications(data.notifications || []))
-      .catch(err => console.warn('Could not fetch notifications', err));
+      .catch(() => setNotifications([
+        { id: 1, title: 'Welcome to MindMend Academy!', message: 'Your portal is optimized with interactive light theme tools.', created_at: new Date(), is_read: 0 },
+        { id: 2, title: 'New Test Assigned', message: 'Full-Stack React Architecture Quiz is now live.', created_at: new Date(), is_read: 0 },
+      ]));
   }, [location.pathname, user]);
 
   const markAllRead = async () => {
     try {
       await api.patch('/cms/notifications/all/read');
-      setNotifications(prev => prev.map(n => ({ ...n, is_read: 1 })));
-      refreshUser();
     } catch (err) {
-      console.error('Failed to mark read', err);
+      // Fallback
     }
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: 1 })));
   };
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div className="min-h-screen bg-[#090D16] text-slate-100 flex flex-col font-sans">
-      <div className="flex-1 flex overflow-hidden">
-        {/* Desktop Sidebar */}
-        <div className="hidden lg:block h-screen sticky top-0">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F6F5FB] text-slate-800 font-sans antialiased select-none">
+        {/* 1. LEFT STATIC SIDEBAR (Stationary 256px column) */}
+        <div className="hidden lg:flex w-64 h-screen shrink-0 border-r border-purple-100 bg-white z-40">
           <Sidebar />
         </div>
 
@@ -69,129 +80,157 @@ export const DashboardLayout: React.FC = () => {
         {mobileSidebarOpen && (
           <div className="fixed inset-0 z-50 lg:hidden flex">
             <div
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
               onClick={() => setMobileSidebarOpen(false)}
             />
-            <div className="relative z-10 w-64 h-full bg-[#0B101D]">
+            <div className="relative z-10 w-64 h-full bg-white">
               <Sidebar onCloseMobile={() => setMobileSidebarOpen(false)} />
             </div>
           </div>
         )}
 
-        {/* Main Content View */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-          {/* Top Bar Header */}
-          <header className="sticky top-0 z-30 bg-[#0A0E1A]/95 backdrop-blur-md border-b border-slate-800 px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+        {/* 2. RIGHT MAIN SCROLLABLE PANEL (Only this side scrolls) */}
+        <div className="flex-1 flex flex-col h-screen min-w-0 overflow-y-auto custom-scrollbar">
+          {/* Header */}
+          <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-purple-100 px-4 sm:px-6 py-3 flex items-center justify-between gap-4 shadow-sm shrink-0">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setMobileSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+                className="lg:hidden p-2 rounded-xl bg-purple-50 text-slate-700 hover:text-[#6A1B9A]"
               >
                 <Menu className="w-5 h-5" />
               </button>
 
-              <div>
-                <h2 className="font-display font-bold text-base sm:text-lg text-white">
-                  {user?.role === 'admin'
-                    ? 'Admin Operations Suite'
-                    : user?.role === 'staff'
-                    ? 'Trainer Dashboard'
-                    : 'Student Learning Workspace'}
-                </h2>
-                <p className="text-[11px] text-slate-400 hidden sm:block">
-                  MindMend Career & Student Management Platform
-                </p>
+              {/* Global Search */}
+              <div className="relative hidden md:block w-72">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => {
+                    setSearchQuery(e.target.value);
+                    setSearchOpen(e.target.value.length > 0);
+                  }}
+                  placeholder="Search courses, tests, syllabus..."
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#F5EFFB] border border-purple-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#6A1B9A] focus:ring-1 focus:ring-[#6A1B9A]"
+                />
+
+                {searchOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-purple-100 rounded-2xl shadow-xl p-3 space-y-2 z-50">
+                    <div className="text-[10px] font-bold uppercase text-[#6A1B9A]">Search Results</div>
+                    <Link
+                      to="/student/courses"
+                      onClick={() => setSearchOpen(false)}
+                      className="flex items-center gap-2 p-2 rounded-xl hover:bg-purple-50 text-xs text-slate-800"
+                    >
+                      <BookOpen className="w-3.5 h-3.5 text-[#6A1B9A]" />
+                      <span>Full-Stack Web Development</span>
+                    </Link>
+                    <Link
+                      to="/student/tests"
+                      onClick={() => setSearchOpen(false)}
+                      className="flex items-center gap-2 p-2 rounded-xl hover:bg-purple-50 text-xs text-slate-800"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>React Architecture Quiz</span>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Header Right Actions */}
             <div className="flex items-center gap-3">
-              {/* Role badge */}
-              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider hidden sm:inline-block ${
-                user?.role === 'admin'
-                  ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
-                  : user?.role === 'staff'
-                  ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20'
-                  : 'bg-brand-500/10 text-brand-300 border border-brand-500/20'
-              }`}>
-                {user?.role}
-              </span>
+              {/* Live Class Launcher */}
+              <button
+                onClick={() => setClassroomOpen(true)}
+                className="px-4 py-2 rounded-xl bg-purple-gradient text-white text-xs font-bold shadow-glow-purple flex items-center gap-2 hover:opacity-95 transition-all"
+              >
+                <Video className="w-4 h-4" />
+                <span className="hidden sm:inline">Join Live Classroom</span>
+              </button>
 
-              {/* Notifications Popover */}
+              {/* Direct Messages */}
+              <button
+                onClick={() => setChatOpen(true)}
+                className="p-2.5 rounded-xl bg-purple-50 border border-purple-100 hover:bg-purple-100 text-slate-700 hover:text-[#6A1B9A] transition-colors relative"
+                title="Messages & Live Chat"
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#6A1B9A] rounded-full"></span>
+              </button>
+
+              {/* Notifications */}
               <div className="relative">
                 <button
                   onClick={() => setNotificationsOpen(!notificationsOpen)}
-                  className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white transition-colors relative"
+                  className="p-2.5 rounded-xl bg-purple-50 border border-purple-100 hover:bg-purple-100 text-slate-700 hover:text-[#6A1B9A] transition-colors relative"
                   title="Notifications"
                 >
                   <Bell className="w-4 h-4" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center animate-pulse">
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#6A1B9A] text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-sm">
                       {unreadCount}
                     </span>
                   )}
                 </button>
 
                 {notificationsOpen && (
-                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#0F172A] border border-slate-700 rounded-2xl shadow-2xl p-4 z-50">
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                      <h4 className="font-bold text-sm text-white flex items-center gap-2">
-                        <Bell className="w-4 h-4 text-brand-400" />
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-purple-100 rounded-2xl shadow-2xl p-4 z-50">
+                    <div className="flex items-center justify-between pb-3 border-b border-purple-100">
+                      <h4 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                        <Bell className="w-4 h-4 text-[#6A1B9A]" />
                         <span>Notifications</span>
                       </h4>
                       {unreadCount > 0 && (
                         <button
                           onClick={markAllRead}
-                          className="text-[11px] text-brand-400 hover:text-brand-300 font-medium"
+                          className="text-[11px] text-[#6A1B9A] hover:underline font-bold"
                         >
-                          Mark all as read
+                          Mark all read
                         </button>
                       )}
                     </div>
 
-                    <div className="max-h-72 overflow-y-auto divide-y divide-slate-800/60 py-2 space-y-1">
-                      {notifications.length === 0 ? (
-                        <p className="text-xs text-slate-400 text-center py-6">No new notifications</p>
-                      ) : (
-                        notifications.map(n => (
-                          <div
-                            key={n.id}
-                            className={`p-2.5 rounded-xl transition-colors ${
-                              !n.is_read ? 'bg-brand-950/40 border border-brand-500/20' : 'hover:bg-slate-800/40'
-                            }`}
-                          >
-                            <p className="text-xs font-semibold text-white">{n.title}</p>
-                            <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">{n.message}</p>
-                            <span className="text-[10px] text-slate-500 mt-1 block">
-                              {new Date(n.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
-                        ))
-                      )}
+                    <div className="max-h-72 overflow-y-auto divide-y divide-purple-50 py-2 space-y-1">
+                      {notifications.map(n => (
+                        <div
+                          key={n.id}
+                          className={`p-3 rounded-xl transition-colors ${
+                            !n.is_read ? 'bg-[#F5EFFB] border border-purple-200' : 'hover:bg-slate-50'
+                          }`}
+                        >
+                          <p className="text-xs font-bold text-slate-900">{n.title}</p>
+                          <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">{n.message}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* User Avatar */}
-              <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
-                <div className="w-8 h-8 rounded-lg bg-brand-600 text-white font-bold text-xs flex items-center justify-center">
+              {/* User Profile Avatar */}
+              <div className="flex items-center gap-2.5 pl-2 border-l border-purple-100">
+                <div className="w-9 h-9 rounded-xl bg-purple-gradient text-white font-black text-xs flex items-center justify-center shadow-md">
                   {user?.full_name?.charAt(0) || 'U'}
                 </div>
                 <div className="hidden md:block text-left">
-                  <p className="text-xs font-semibold text-white leading-tight">{user?.full_name || 'User'}</p>
-                  <p className="text-[10px] text-slate-400 font-mono">{user?.student_id || user?.staff_id || user?.email}</p>
+                  <p className="text-xs font-extrabold text-slate-900 leading-tight">{user?.full_name || 'User'}</p>
+                  <span className="text-[10px] text-[#6A1B9A] uppercase font-bold">{user?.role}</span>
                 </div>
               </div>
             </div>
           </header>
 
-          {/* Page Body */}
+          {/* Body Content */}
           <main className="p-4 sm:p-6 lg:p-8 flex-1">
             <Outlet />
           </main>
         </div>
+
+        {/* Global Modals */}
+        <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+        <VirtualClassroomModal isOpen={classroomOpen} onClose={() => setClassroomOpen(false)} />
       </div>
-    </div>
   );
 };

@@ -4,44 +4,35 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         brand: {
-          50: '#f3e5f5',
-          100: '#e1bee7',
-          200: '#ce93d8',
-          300: '#ba68c8',
-          400: '#ab47bc',
-          500: '#9c27b0',
-          600: '#6a1b9a',
-          700: '#4a148c',
-          800: '#38006b',
-          900: '#26004d',
-          950: '#180033',
+          50: '#F5EFFB',
+          100: '#E9D6F7',
+          200: '#D5ADEF',
+          300: '#C082E6',
+          400: '#A44DDD',
+          500: '#8E24AA',
+          600: '#6A1B9A', // Primary Purple requested by user
+          700: '#52147C',
+          800: '#3E0C5E',
+          900: '#290642',
+          950: '#1A022B',
         },
-        dark: {
-          bg: '#090D16',
-          surface: '#0F172A',
-          card: '#131B2E',
-          cardHover: '#182238',
-          border: '#1E293B',
-          borderLight: '#334155',
-          text: '#F8FAFC',
-          muted: '#94A3B8',
-        }
       },
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
         display: ['Outfit', 'Plus Jakarta Sans', 'sans-serif'],
       },
       boxShadow: {
-        'glow-violet': '0 0 25px -5px rgba(124, 58, 237, 0.35)',
-        'glow-sm': '0 0 15px -3px rgba(139, 92, 246, 0.25)',
-        'card-dark': '0 4px 20px -2px rgba(0, 0, 0, 0.5)',
+        'glow-purple': '0 4px 25px -3px rgba(106, 27, 154, 0.25)',
+        'glow-sm': '0 2px 15px -2px rgba(106, 27, 154, 0.18)',
+        'card-light': '0 4px 20px -2px rgba(106, 27, 154, 0.05)',
       }
     },
   },
   plugins: [],
 }
+
+

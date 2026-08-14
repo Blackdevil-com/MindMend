@@ -3,54 +3,51 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --brand-purple: #6A1B9A;
+    --brand-light-purple: #8E24AA;
+    --brand-dark-purple: #4A148C;
+  }
+
   body {
-    @apply bg-[#090D16] text-slate-100 font-sans min-h-screen antialiased;
+    @apply bg-[#F6F5FB] text-slate-800 font-sans min-h-screen antialiased;
   }
 
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #0F172A;
+    background: #F0EAF8;
   }
   ::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
+    background: #D5C2ED;
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #7C3AED;
+    background: #6A1B9A;
   }
 }
 
 @layer utilities {
-  .bg-radial-gradient {
-    background-image: radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.15) 0%, rgba(9, 13, 22, 0) 70%);
-  }
-  .bg-card-gradient {
-    background: linear-gradient(180deg, rgba(24, 34, 56, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
-  }
-  .bg-glass {
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-  .border-glass {
-    border-color: rgba(148, 163, 184, 0.12);
+  .bg-purple-gradient {
+    background: linear-gradient(135deg, #6A1B9A 0%, #8E24AA 50%, #4A148C 100%);
   }
 }
 
 /* Animations */
-@keyframes pulse-glow {
+@keyframes pulse-purple {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 0 15px rgba(106, 27, 154, 0.2);
   }
   50% {
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+    box-shadow: 0 0 25px rgba(142, 36, 170, 0.4);
   }
 }
 
-.animate-glow {
-  animation: pulse-glow 3s infinite ease-in-out;
+.animate-glow-purple {
+  animation: pulse-purple 3s infinite ease-in-out;
 }
+
+

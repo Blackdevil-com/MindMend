@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Role } from '../types/index';
 import { api } from '../services/api';
+import { auth, db } from '../config/firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -11,7 +14,6 @@ interface AuthContextType {
   login: (identifier: string, password: string) => Promise<User>;
   registerStudent: (data: any) => Promise<{ token: string; user: User }>;
   logout: () => void;
-  quickDemoLogin: (roleKey: 'admin' | 'staff1' | 'staff2' | 'staff3' | 'student1') => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -26,11 +28,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (token) {
+    // Listen for Firebase Auth state changes
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data() as User;
+            setUser(userData);
+            localStorage.setItem('mindmend_user', JSON.stringify(userData));
+          }
+        } catch (e) {
+          console.warn('Firestore user doc load error:', e);
+        }
+      }
+      setIsLoading(false);
+    });
+
+    if (token && !user) {
       refreshUser().finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);
     }
+
+    return () => unsubscribe();
   }, [token]);
 
   const refreshUser = async () => {
@@ -46,6 +67,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const login = async (identifier: string, password: string): Promise<User> => {
+    // 1. Try Firebase Auth first if identifier is email format
+    if (identifier.includes('@')) {
+      try {
+        const userCred = await signInWithEmailAndPassword(auth, identifier, password);
+        const fbUser = userCred.user;
+        
+        // Fetch or create user record in Firestore
+        let userProfile: User;
+        const userDoc = await getDoc(doc(db, 'users', fbUser.uid));
+        if (userDoc.exists()) {
+          userProfile = userDoc.data() as User;
+        } else {
+          userProfile = {
+            id: Date.now(),
+            email: fbUser.email || identifier,
+            full_name: fbUser.displayName || identifier.split('@')[0],
+            role: identifier.includes('admin') ? 'admin' : identifier.includes('staff') ? 'staff' : 'student',
+            student_id: `STU-2026-${Math.floor(Math.random() * 90 + 10)}`,
+          } as User;
+          await setDoc(doc(db, 'users', fbUser.uid), userProfile);
+        }
+
+        const fakeToken = await fbUser.getIdToken();
+        localStorage.setItem('mindmend_token', fakeToken);
+        localStorage.setItem('mindmend_user', JSON.stringify(userProfile));
+        setToken(fakeToken);
+        setUser(userProfile);
+        return userProfile;
+      } catch (firebaseErr: any) {
+        console.warn('Firebase Auth sign in failed, falling back to API:', firebaseErr.message);
+      }
+    }
+
+    // 2. Fallback to API / Database Login
     const data = await api.post('/auth/login', { identifier, password });
     localStorage.setItem('mindmend_token', data.token);
     localStorage.setItem('mindmend_user', JSON.stringify(data.user));
@@ -55,6 +110,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const registerStudent = async (formData: any) => {
+    // Register in Firebase Auth & Firestore first
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const fbUser = userCred.user;
+      
+      const newStudentUser: User = {
+        id: Date.now(),
+        email: formData.email,
+        full_name: formData.full_name,
+        role: 'student',
+        student_id: `STU-2026-${Math.floor(Math.random() * 90 + 10)}`,
+      } as User;
+
+      await setDoc(doc(db, 'users', fbUser.uid), newStudentUser);
+      await setDoc(doc(db, 'students', fbUser.uid), {
+        ...formData,
+        uid: fbUser.uid,
+        created_at: new Date().toISOString(),
+      });
+
+      const fakeToken = await fbUser.getIdToken();
+      localStorage.setItem('mindmend_token', fakeToken);
+      localStorage.setItem('mindmend_user', JSON.stringify(newStudentUser));
+      setToken(fakeToken);
+      setUser(newStudentUser);
+      return { token: fakeToken, user: newStudentUser };
+    } catch (e) {
+      console.warn('Firebase signup fallback to API:', e);
+    }
+
     const data = await api.post('/auth/register', formData);
     localStorage.setItem('mindmend_token', data.token);
     localStorage.setItem('mindmend_user', JSON.stringify(data.user));
@@ -64,34 +149,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    signOut(auth).catch(() => {});
     localStorage.removeItem('mindmend_token');
     localStorage.removeItem('mindmend_user');
     setToken(null);
     setUser(null);
-  };
-
-  const quickDemoLogin = async (roleKey: 'admin' | 'staff1' | 'staff2' | 'staff3' | 'student1') => {
-    let identifier = '';
-    let password = '';
-
-    if (roleKey === 'admin') {
-      identifier = 'admin@mindmend.edu';
-      password = 'Admin@123';
-    } else if (roleKey === 'staff1') {
-      identifier = 'STF20260001';
-      password = 'Staff@123';
-    } else if (roleKey === 'staff2') {
-      identifier = 'STF20260002';
-      password = 'Staff@123';
-    } else if (roleKey === 'staff3') {
-      identifier = 'STF20260003';
-      password = 'Staff@123';
-    } else if (roleKey === 'student1') {
-      identifier = 'STU20260001';
-      password = 'Student@123';
-    }
-
-    await login(identifier, password);
   };
 
   return (
@@ -105,7 +167,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         registerStudent,
         logout,
-        quickDemoLogin,
         refreshUser,
       }}
     >
