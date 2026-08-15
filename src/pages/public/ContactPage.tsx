@@ -81,7 +81,7 @@ export const ContactPage: React.FC = () => {
                 <div>
                   <p className="font-bold text-slate-900">Campus Headquarters</p>
                   <p className="text-slate-500 mt-0.5 leading-relaxed">
-                    MindMend Tech Hub, 4th Floor, Electronic City Phase 1, Bangalore, KA 560100
+                    N0.629 KOSAPETTAI STREET, KADAMBANALLUR, RANIPET DISTRICT, TAMILNADU- 631151
                   </p>
                 </div>
               </div>
@@ -92,8 +92,8 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-bold text-slate-900">Phone Support</p>
-                  <p className="text-slate-500 mt-0.5">+91 98765 43210</p>
-                  <p className="text-slate-500">+91 80 4123 4567</p>
+                  <p className="text-slate-500 mt-0.5">+91 93456 38887</p>
+                  <p className="text-slate-500">+91 79043 33423 | 9360700500</p>
                 </div>
               </div>
 
@@ -103,8 +103,7 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-bold text-slate-900">Direct Email</p>
-                  <p className="text-slate-500 mt-0.5">contact@mindmend.edu</p>
-                  <p className="text-slate-500">admissions@mindmend.edu</p>
+                  <p className="text-slate-500 mt-0.5">mindmendtraining@gmail.com</p>
                 </div>
               </div>
 

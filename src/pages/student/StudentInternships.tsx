@@ -50,11 +50,11 @@ export const StudentInternships: React.FC = () => {
     <div className="space-y-8 max-w-5xl mx-auto pb-12 select-none">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-white flex items-center gap-3">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 flex items-center gap-3">
             <Briefcase className="w-7 h-7 text-[#8E24AA]" />
             <span>My Internship Applications</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
             Track status updates, reviewer comments, and career placement mentorship.
           </p>
         </div>
@@ -70,10 +70,10 @@ export const StudentInternships: React.FC = () => {
 
       <div className="space-y-4">
         {applications.length === 0 ? (
-          <div className="p-12 rounded-3xl bg-[#120B20] border border-[#2A1A4A] text-center space-y-4 shadow-xl">
+          <div className="p-12 rounded-3xl bg-white border border-purple-100 text-center space-y-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
             <Briefcase className="w-10 h-10 text-[#8E24AA] mx-auto" />
-            <h3 className="font-bold text-base text-white">No Active Applications</h3>
-            <p className="text-xs text-slate-400 max-w-md mx-auto">
+            <h3 className="font-bold text-base text-slate-900">No Active Applications</h3>
+            <p className="text-xs text-slate-500 max-w-md mx-auto">
               Work on live enterprise projects in Full-Stack, Data Analytics, or AI.
             </p>
             <Link
@@ -87,14 +87,14 @@ export const StudentInternships: React.FC = () => {
           applications.map((app: any) => (
             <div
               key={app.id}
-              className="p-6 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-4 shadow-md"
+              className="p-6 rounded-3xl bg-white border border-purple-100 space-y-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#2A1A4A]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-purple-100">
                 <div>
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-[#6A1B9A]/20 text-brand-300 border border-[#6A1B9A]/40 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-[#F5EFFB] text-[#6A1B9A] border border-purple-200 uppercase tracking-wider">
                     Application #{app.id}
                   </span>
-                  <h3 className="font-display font-bold text-lg text-white mt-1">
+                  <h3 className="font-display font-bold text-lg text-slate-900 mt-1">
                     {app.domain} Internship Track
                   </h3>
                 </div>
@@ -102,28 +102,28 @@ export const StudentInternships: React.FC = () => {
                 <div>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                     app.status === 'shortlisted' || app.status === 'accepted'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                       : app.status === 'rejected'
-                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                      : 'bg-[#6A1B9A]/30 text-brand-300 border border-[#8E24AA]/40'
+                      ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                      : 'bg-purple-100 text-purple-800 border border-purple-200'
                   }`}>
                     {app.status.replace('_', ' ')}
                   </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-300">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-600">
                 <div>
                   <span className="text-[10px] text-slate-500 uppercase block">College / Department</span>
-                  <p className="font-semibold text-white mt-0.5">{app.college} - {app.department}</p>
+                  <p className="font-semibold text-slate-900 mt-0.5">{app.college} - {app.department}</p>
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-500 uppercase block">Applied Date</span>
-                  <p className="text-slate-300 mt-0.5">{app.applied_at}</p>
+                  <p className="text-slate-600 mt-0.5">{app.applied_at}</p>
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-500 uppercase block">Resume Status</span>
-                  <span className="text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
+                  <span className="text-emerald-600 font-semibold flex items-center gap-1 mt-0.5">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Verified & Reviewed</span>
                   </span>
@@ -131,12 +131,12 @@ export const StudentInternships: React.FC = () => {
               </div>
 
               {app.admin_feedback && (
-                <div className="p-3.5 rounded-2xl bg-[#1A0E30] border border-[#3D276B] text-xs space-y-1">
-                  <span className="text-[10px] font-bold text-brand-300 uppercase tracking-wider flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-amber-300" />
+                <div className="p-3.5 rounded-2xl bg-[#FAFAFE] border border-purple-100 text-xs space-y-1">
+                  <span className="text-[10px] font-bold text-[#6A1B9A] uppercase tracking-wider flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-500" />
                     Reviewer Note:
                   </span>
-                  <p className="text-slate-200 leading-relaxed">{app.admin_feedback}</p>
+                  <p className="text-slate-750 leading-relaxed">{app.admin_feedback}</p>
                 </div>
               )}
             </div>

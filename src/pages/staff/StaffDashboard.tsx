@@ -30,14 +30,9 @@ export const StaffDashboard: React.FC = () => {
     api.get('/staff/dashboard-stats')
       .then(res => setData(res))
       .catch(() => setData({
-        stats: { assigned_batches_count: 2, total_students: 48, assigned_courses_count: 3, today_attendance_marked: true },
-        batches: [
-          { id: 1, name: 'FS-2026-A', course_title: 'Full-Stack Web Architecture', student_count: 28, timing: '10:00 AM - 12:30 PM' },
-          { id: 2, name: 'UI-2026-B', course_title: 'Envato UI/UX Design Pro', student_count: 20, timing: '02:00 PM - 04:30 PM' },
-        ],
-        recent_tests: [
-          { id: 1, title: 'React State Management & Hooks Test', subject: 'Web Architecture', duration_minutes: 30, total_marks: 50, completed_submissions: 24 }
-        ]
+        stats: { assigned_batches_count: 0, total_students: 0, assigned_courses_count: 0, today_attendance_marked: false },
+        batches: [],
+        recent_tests: []
       }))
       .finally(() => setLoading(false));
   }, []);
@@ -66,7 +61,7 @@ export const StaffDashboard: React.FC = () => {
             </span>
 
             <h1 className="font-display font-black text-2xl sm:text-3xl">
-              Welcome back, {staff?.full_name || user?.full_name}! 👨‍🏫
+              Welcome back, {staff?.full_name || user?.full_name}! 
             </h1>
 
             <p className="text-xs sm:text-sm text-purple-100 opacity-95">
@@ -75,19 +70,12 @@ export const StaffDashboard: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => setClassroomOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-white text-[#6A1B9A] hover:bg-purple-50 font-black text-xs shadow-md transition-all flex items-center gap-2"
-            >
-              <Video className="w-4 h-4 text-[#6A1B9A]" />
-              <span>Host Virtual Class</span>
-            </button>
             <Link
               to="/staff/attendance"
               className="px-4 py-2.5 rounded-xl bg-[#8E24AA] hover:bg-[#9C47D1] text-white font-extrabold text-xs shadow-glow-purple transition-all flex items-center gap-1.5"
             >
-              <CalendarCheck className="w-4 h-4" />
-              <span>Mark Attendance</span>
+               <CalendarCheck className="w-4 h-4" />
+               <span>Mark Attendance</span>
             </Link>
           </div>
         </div>
@@ -100,7 +88,7 @@ export const StaffDashboard: React.FC = () => {
             <span className="text-xs text-slate-500 font-semibold">Assigned Batches</span>
             <Layers className="w-4 h-4 text-[#6A1B9A]" />
           </div>
-          <p className="font-display font-black text-2xl text-slate-900">{stats.assigned_batches_count || 2}</p>
+          <p className="font-display font-black text-2xl text-slate-900">{stats.assigned_batches_count || 0}</p>
         </div>
 
         <div className="p-5 rounded-3xl bg-white border border-purple-100 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] space-y-2">
@@ -108,7 +96,7 @@ export const StaffDashboard: React.FC = () => {
             <span className="text-xs text-slate-500 font-semibold">Active Students</span>
             <Users className="w-4 h-4 text-emerald-600" />
           </div>
-          <p className="font-display font-black text-2xl text-slate-900">{stats.total_students || 48}</p>
+          <p className="font-display font-black text-2xl text-slate-900">{stats.total_students || 0}</p>
         </div>
 
         <div className="p-5 rounded-3xl bg-white border border-purple-100 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] space-y-2">
@@ -116,7 +104,7 @@ export const StaffDashboard: React.FC = () => {
             <span className="text-xs text-slate-500 font-semibold">Assigned Courses</span>
             <BookOpen className="w-4 h-4 text-brand-600" />
           </div>
-          <p className="font-display font-black text-2xl text-slate-900">{stats.assigned_courses_count || 3}</p>
+          <p className="font-display font-black text-2xl text-slate-900">{stats.assigned_courses_count || 0}</p>
         </div>
 
         <div className="p-5 rounded-3xl bg-white border border-purple-100 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] space-y-2">
@@ -152,7 +140,7 @@ export const StaffDashboard: React.FC = () => {
                     <h4 className="font-extrabold text-sm text-slate-900">{b.course_title}</h4>
                   </div>
                   <span className="px-3 py-1 rounded-full bg-[#F5EFFB] border border-purple-200 text-xs font-bold text-[#6A1B9A]">
-                    {b.student_count || 24} Students
+                    {b.student_count || 0} Students
                   </span>
                 </div>
 
@@ -184,7 +172,7 @@ export const StaffDashboard: React.FC = () => {
                     {t.subject}
                   </span>
                   <span className="text-xs font-bold text-emerald-600">
-                    {t.completed_submissions || 24} Evaluated
+                    {t.completed_submissions || 0} Evaluated
                   </span>
                 </div>
 

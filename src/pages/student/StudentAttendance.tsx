@@ -50,11 +50,11 @@ export const StudentAttendance: React.FC = () => {
     <div className="space-y-8 max-w-5xl mx-auto pb-12 select-none">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-white flex items-center gap-3">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 flex items-center gap-3">
             <CalendarCheck className="w-7 h-7 text-[#8E24AA]" />
             <span>My Attendance Record</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
             Review your daily training session attendance logs and compliance metrics.
           </p>
         </div>
@@ -70,36 +70,36 @@ export const StudentAttendance: React.FC = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-5 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-1 shadow-md">
-          <span className="text-[10px] uppercase font-bold text-slate-400">Compliance Rate</span>
-          <div className="font-display font-black text-2xl text-brand-300">{summary.percentage}%</div>
+        <div className="p-5 rounded-3xl bg-white border border-purple-100 space-y-1 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
+          <span className="text-[10px] uppercase font-bold text-slate-500">Compliance Rate</span>
+          <div className="font-display font-black text-2xl text-[#6A1B9A]">{summary.percentage}%</div>
         </div>
 
-        <div className="p-5 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-1 shadow-md">
-          <span className="text-[10px] uppercase font-bold text-slate-400">Present Days</span>
-          <div className="font-display font-black text-2xl text-emerald-400">{summary.present_days}</div>
+        <div className="p-5 rounded-3xl bg-white border border-purple-100 space-y-1 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
+          <span className="text-[10px] uppercase font-bold text-slate-500">Present Days</span>
+          <div className="font-display font-black text-2xl text-emerald-650">{summary.present_days}</div>
         </div>
 
-        <div className="p-5 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-1 shadow-md">
-          <span className="text-[10px] uppercase font-bold text-slate-400">Absent Days</span>
-          <div className="font-display font-black text-2xl text-rose-400">{summary.absent_days}</div>
+        <div className="p-5 rounded-3xl bg-white border border-purple-100 space-y-1 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
+          <span className="text-[10px] uppercase font-bold text-slate-500">Absent Days</span>
+          <div className="font-display font-black text-2xl text-rose-600">{summary.absent_days}</div>
         </div>
 
-        <div className="p-5 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-1 shadow-md">
-          <span className="text-[10px] uppercase font-bold text-slate-400">Approved Leaves</span>
-          <div className="font-display font-black text-2xl text-amber-400">{summary.leave_days}</div>
+        <div className="p-5 rounded-3xl bg-white border border-purple-100 space-y-1 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
+          <span className="text-[10px] uppercase font-bold text-slate-500">Approved Leaves</span>
+          <div className="font-display font-black text-2xl text-amber-600">{summary.leave_days}</div>
         </div>
       </div>
 
       {/* Detailed Attendance Roster */}
-      <div className="p-6 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-4 shadow-xl">
-        <h3 className="font-display font-bold text-lg text-white">Daily Attendance History</h3>
+      <div className="p-6 rounded-3xl bg-white border border-purple-100 space-y-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
+        <h3 className="font-display font-bold text-lg text-slate-900">Daily Attendance History</h3>
         {records.length === 0 ? (
-          <p className="text-xs text-slate-400 py-4 text-center">No attendance sessions recorded yet.</p>
+          <p className="text-xs text-slate-500 py-4 text-center">No attendance sessions recorded yet.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#1A0E30] text-slate-400 uppercase font-semibold border-b border-[#2A1A4A]">
+              <thead className="bg-[#F5EFFB] text-[#6A1B9A] uppercase font-bold border-b border-purple-100">
                 <tr>
                   <th className="p-3">Session Date</th>
                   <th className="p-3">Batch ID</th>
@@ -108,24 +108,24 @@ export const StudentAttendance: React.FC = () => {
                   <th className="p-3">Remarks</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#2A1A4A]">
+              <tbody className="divide-y divide-purple-50">
                 {records.map((rec: any) => (
-                  <tr key={rec.id} className="hover:bg-[#1C1033] transition-colors">
-                    <td className="p-3 font-semibold text-white">{rec.date}</td>
-                    <td className="p-3 font-mono text-brand-300">{rec.batch_name}</td>
-                    <td className="p-3 text-slate-300">{rec.course_title}</td>
+                  <tr key={rec.id} className="hover:bg-purple-50/50 transition-colors">
+                    <td className="p-3 font-semibold text-slate-800">{rec.date}</td>
+                    <td className="p-3 font-mono text-[#6A1B9A] font-bold">{rec.batch_name}</td>
+                    <td className="p-3 text-slate-650 font-medium">{rec.course_title}</td>
                     <td className="p-3">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
                         rec.status === 'present'
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                          ? 'bg-emerald-100 text-emerald-850 border border-emerald-200'
                           : rec.status === 'absent'
-                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          ? 'bg-rose-100 text-rose-855 border border-rose-205'
+                          : 'bg-amber-100 text-amber-850 border border-amber-200'
                       }`}>
                         {rec.status}
                       </span>
                     </td>
-                    <td className="p-3 text-slate-400">{rec.remarks || '—'}</td>
+                    <td className="p-3 text-slate-500 font-medium">{rec.remarks || '—'}</td>
                   </tr>
                 ))}
               </tbody>

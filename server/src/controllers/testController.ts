@@ -357,6 +357,26 @@ export const toggleTestStatus = (req: Request, res: Response) => {
   }
 };
 
+export const toggleTestMarksVisibility = (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const test = db.prepare('SELECT id, marks_released FROM tests WHERE id = ?').get(id) as any;
+    if (!test) {
+      return res.status(404).json({ error: 'Test not found' });
+    }
+
+    const nextStatus = test.marks_released === 1 ? 0 : 1;
+    db.prepare('UPDATE tests SET marks_released = ? WHERE id = ?').run(nextStatus, id);
+    return res.json({
+      message: `Marks visibility updated successfully. Status: ${nextStatus === 1 ? 'Released' : 'Hidden'}`,
+      marks_released: nextStatus,
+    });
+  } catch (error: any) {
+    console.error('Error in toggleTestMarksVisibility:', error);
+    return res.status(500).json({ error: 'Failed to update marks visibility status' });
+  }
+};
+
 // ============================================
 // STUDENT TEST-TAKING & SUBMISSION ENGINE
 // ============================================
@@ -581,6 +601,7 @@ export const getAttemptResult = (req: AuthRequest, res: Response) => {
         t.subject,
         t.passing_marks,
         t.duration_minutes,
+        t.marks_released,
         s.student_id,
         s.full_name as student_name,
         s.college_name,
@@ -598,6 +619,30 @@ export const getAttemptResult = (req: AuthRequest, res: Response) => {
     // Role security check: student can only view their own result
     if (req.user && req.user.role === 'student' && req.user.student_id !== attempt.student_id) {
       return res.status(403).json({ error: 'Access denied to this result' });
+    }
+
+    if (req.user && req.user.role === 'student' && !attempt.marks_released) {
+      return res.json({
+        attempt: {
+          id: attempt.id,
+          test_id: attempt.test_id,
+          test_title: attempt.test_title,
+          subject: attempt.subject,
+          duration_minutes: attempt.duration_minutes,
+          student_id: attempt.student_id,
+          student_name: attempt.student_name,
+          college_name: attempt.college_name,
+          department: attempt.department,
+          status: attempt.status,
+          submitted_at: attempt.submitted_at,
+          marks_released: 0,
+          score: null,
+          total_marks: attempt.total_marks,
+          percentage: null,
+          passed: null,
+          breakdown: []
+        }
+      });
     }
 
     const breakdown = attempt.answers_json ? JSON.parse(attempt.answers_json) : [];

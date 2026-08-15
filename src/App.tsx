@@ -107,6 +107,7 @@ export const App: React.FC = () => {
         <Route path="courses" element={<StudentCourses />} />
         <Route path="tests" element={<StudentTests />} />
         <Route path="tests/take/:id" element={<TakeTestPage />} />
+        <Route path="results" element={<Navigate to="/student/tests?tab=completed" replace />} />
         <Route path="results/:attemptId" element={<TestResultPage />} />
         <Route path="performance" element={<StudentPerformance />} />
         <Route path="attendance" element={<StudentAttendance />} />
@@ -131,6 +132,7 @@ export const App: React.FC = () => {
         <Route path="tests" element={<StaffTests />} />
         <Route path="results" element={<StaffResults />} />
         <Route path="announcements" element={<StaffAnnouncements />} />
+        <Route path="profile" element={<StudentProfile />} />
       </Route>
 
       {/* 4. Admin Portal Routes */}
@@ -155,6 +157,7 @@ export const App: React.FC = () => {
         <Route path="announcements" element={<AdminAnnouncements />} />
         <Route path="cms" element={<AdminCMS />} />
         <Route path="reports" element={<AdminReports />} />
+        <Route path="profile" element={<StudentProfile />} />
       </Route>
 
       {/* 5. Fallback Route */}

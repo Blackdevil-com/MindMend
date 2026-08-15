@@ -59,8 +59,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         {
           section: 'ACADEMIC HUB',
           items: [
-            { label: 'Course Catalog', path: '/admin/courses', icon: BookOpen },
-            { label: 'Batch Cohorts', path: '/admin/batches', icon: Layers },
+            // { label: 'Course Catalog', path: '/admin/courses', icon: BookOpen },
+            // { label: 'Batch Cohorts', path: '/admin/batches', icon: Layers },
             { label: 'Online Assessments', path: '/admin/tests', icon: FileCheck2 },
             { label: 'Test Results', path: '/admin/results', icon: Award },
           ],
@@ -84,17 +84,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
           section: 'INSTRUCTOR HUB',
           items: [
             { label: 'Dashboard', path: '/staff/dashboard', icon: LayoutDashboard },
-            { label: 'My Cohort Batches', path: '/staff/batches', icon: Layers },
-            { label: 'Assigned Courses', path: '/courses', icon: BookOpen },
+            // { label: 'My Cohort Batches', path: '/staff/batches', icon: Layers },
+            // { label: 'Assigned Courses', path: '/courses', icon: BookOpen },
           ],
         },
         {
           section: 'EVALUATION & CLASSROOM',
           items: [
             { label: 'Test Question Bank', path: '/staff/tests', icon: FileCheck2 },
-            { label: 'Mark Attendance', path: '/staff/attendance', icon: CalendarCheck },
+            // { label: 'Mark Attendance', path: '/staff/attendance', icon: CalendarCheck },
             { label: 'Student Results', path: '/staff/results', icon: Award },
-            { label: 'Post Announcements', path: '/staff/announcements', icon: Bell },
+            // { label: 'Post Announcements', path: '/staff/announcements', icon: Bell },
           ],
         },
       ];
@@ -105,19 +105,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         section: 'STUDENT PORTAL',
         items: [
           { label: 'Dashboard', path: '/student/dashboard', icon: LayoutDashboard },
-          { label: 'My Enrolled Courses', path: '/student/courses', icon: BookOpen },
+          // { label: 'My Enrolled Courses', path: '/student/courses', icon: BookOpen },
           { label: 'Online Tests', path: '/student/tests', icon: FileCheck2 },
-          { label: 'Test Breakdown', path: '/student/results', icon: Award },
-        ],
-      },
-      {
-        section: 'ANALYTICS & CAREER',
-        items: [
-          { label: 'Performance Analytics', path: '/student/performance', icon: TrendingUp },
-          { label: 'Attendance Summary', path: '/student/attendance', icon: CalendarCheck },
-          { label: 'Corporate Internships', path: '/student/internships', icon: Briefcase },
-          { label: 'Announcements Hub', path: '/student/announcements', icon: Bell },
-          { label: 'My Profile', path: '/student/profile', icon: User },
+          { label: 'Test Breakdown', path: '/student/tests?tab=completed', icon: Award },
         ],
       },
     ];
@@ -193,6 +183,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         </div>
 
         {/* 4. Optimization Example Element: VIP Pass Banner */}
+        {/*
         <div className="p-3.5 mx-3 my-2 rounded-2xl bg-purple-gradient text-white relative overflow-hidden shadow-lg">
           <div className="relative z-10 space-y-2">
             <div className="flex items-center justify-between">
@@ -220,9 +211,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
             </button>
           </div>
         </div>
+        */}
 
         {/* 5. Footer Actions */}
         <div className="p-3 border-t border-purple-100 space-y-1 bg-[#FAF8FD]">
+          <NavLink
+            to={user?.role === 'admin' ? '/admin/profile' : user?.role === 'staff' ? '/staff/profile' : '/student/profile'}
+            className="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-[#6A1B9A] hover:bg-white transition-colors"
+          >
+            <Settings className="w-4 h-4 text-slate-400" />
+            <span>Profile & Security</span>
+          </NavLink>
+
           <NavLink
             to="/"
             className="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-[#6A1B9A] hover:bg-white transition-colors"

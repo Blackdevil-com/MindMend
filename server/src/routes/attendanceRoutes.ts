@@ -5,6 +5,7 @@ import {
   getStudentAttendanceHistory,
   getGlobalAttendanceReports,
   exportAttendanceCSV,
+  getBatchAttendanceStats,
 } from '../controllers/attendanceController.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
 
@@ -14,6 +15,7 @@ router.post('/mark', verifyToken, requireRole(['admin', 'staff']), markBatchAtte
 router.get('/batch/:batchId', verifyToken, requireRole(['admin', 'staff']), getBatchAttendanceForDate);
 router.get('/student/:studentId?', verifyToken, getStudentAttendanceHistory);
 router.get('/reports', verifyToken, requireRole(['admin']), getGlobalAttendanceReports);
+router.get('/stats', verifyToken, requireRole(['admin', 'staff']), getBatchAttendanceStats);
 router.get('/export/csv/:batchId', verifyToken, requireRole(['admin', 'staff']), exportAttendanceCSV);
 
 export default router;

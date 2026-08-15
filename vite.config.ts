@@ -9,11 +9,11 @@ function getBackendTarget() {
     if (fs.existsSync(portFile)) {
       const activePort = fs.readFileSync(portFile, 'utf-8').trim();
       if (activePort) {
-        return `http://localhost:${activePort}`;
+        return `http://127.0.0.1:${activePort}`;
       }
     }
   } catch (e) { }
-  return 'http://localhost:8081';
+  return 'http://127.0.0.1:8081';
 }
 
 export default defineConfig({

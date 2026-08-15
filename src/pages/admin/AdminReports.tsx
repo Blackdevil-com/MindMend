@@ -58,11 +58,11 @@ export const AdminReports: React.FC = () => {
   return (
     <div className="space-y-8 max-w-6xl mx-auto pb-12 select-none">
       <div>
-        <h1 className="font-display font-black text-2xl sm:text-3xl text-white flex items-center gap-3">
+        <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 flex items-center gap-3">
           <FileSpreadsheet className="w-7 h-7 text-[#8E24AA]" />
           <span>Institutional Reports & Data Exports</span>
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400">
+        <p className="text-xs sm:text-sm text-slate-505 font-medium mt-1">
           Download standardized CSV audit logs for administrative records, accreditation, and student performance tracking.
         </p>
       </div>
@@ -75,26 +75,26 @@ export const AdminReports: React.FC = () => {
           return (
             <div
               key={rep.id}
-              className="p-6 sm:p-8 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-6 flex flex-col justify-between hover:border-[#6A1B9A]/60 transition-all shadow-xl"
+              className="p-6 sm:p-8 rounded-3xl bg-white border border-purple-100 space-y-6 flex flex-col justify-between hover:border-[#6A1B9A]/60 transition-all shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#6A1B9A]/20 border border-[#6A1B9A]/40 flex items-center justify-center text-[#8E24AA] shadow-glow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-[#F5EFFB] border border-purple-200 flex items-center justify-center text-[#8E24AA] shadow-glow-sm">
                   <Icon className="w-6 h-6" />
                 </div>
 
                 <div>
-                  <h3 className="font-display font-bold text-xl text-white">
+                  <h3 className="font-display font-bold text-xl text-slate-900">
                     {rep.title}
                   </h3>
-                  <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                  <p className="text-xs text-slate-550 mt-2 leading-relaxed font-medium">
                     {rep.description}
                   </p>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#2A1A4A] flex items-center justify-between">
-                <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="pt-4 border-t border-purple-100 flex items-center justify-between">
+                <span className="text-[11px] font-mono text-slate-500 flex items-center gap-1.5 font-bold">
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
                   Format: .CSV
                 </span>
 

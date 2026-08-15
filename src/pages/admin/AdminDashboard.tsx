@@ -34,22 +34,12 @@ export const AdminDashboard: React.FC = () => {
     api.get('/cms/admin/summary')
       .then(res => setData(res))
       .catch(() => setData({
-        stats: { total_students: 120, active_students: 110, total_staff: 8, active_courses: 5, total_tests: 14, tests_completed: 180, internship_applications: 32, avg_student_score: 91 },
+        stats: { total_students: 0, active_students: 0, total_staff: 0, active_courses: 0, total_tests: 0, tests_completed: 0, internship_applications: 0, avg_student_score: 0 },
         charts: {
-          course_enrollments: [
-            { title: 'Full-Stack Web', students_count: 48 },
-            { title: 'Power BI Data Analytics', students_count: 32 },
-            { title: 'Java Microservices', students_count: 24 },
-          ],
-          batch_stats: [
-            { name: 'FS-2026-A', avg_score: 92 },
-            { name: 'UI-2026-B', avg_score: 88 },
-          ]
+          course_enrollments: [],
+          batch_stats: []
         },
-        recent_activities: [
-          { title: 'New student registration STU-2026-12', created_at: new Date().toISOString(), type: 'student' },
-          { title: 'Full-Stack React Quiz evaluated', created_at: new Date().toISOString(), type: 'test' },
-        ]
+        recent_activities: []
       }))
       .finally(() => setLoading(false));
   }, []);

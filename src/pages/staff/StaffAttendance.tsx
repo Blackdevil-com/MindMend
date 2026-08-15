@@ -115,11 +115,11 @@ export const StaffAttendance: React.FC = () => {
     <div className="space-y-8 max-w-6xl mx-auto pb-12 select-none">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-white flex items-center gap-3">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 flex items-center gap-3">
             <CalendarCheck className="w-7 h-7 text-[#8E24AA]" />
             <span>Daily Attendance Management</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
             Select a cohort batch and date to record daily presence and leaves.
           </p>
         </div>
@@ -134,14 +134,14 @@ export const StaffAttendance: React.FC = () => {
         </button>
       </div>
 
-      <div className="p-6 rounded-3xl bg-[#120B20] border border-[#2A1A4A] flex flex-col md:flex-row items-center justify-between gap-4 shadow-md">
+      <div className="p-6 rounded-3xl bg-white border border-purple-100 flex flex-col md:flex-row items-center justify-between gap-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
         <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
           <div>
-            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Select Batch</label>
+            <label className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Select Batch</label>
             <select
               value={selectedBatchId}
               onChange={e => setSelectedBatchId(e.target.value)}
-              className="px-4 py-2 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white focus:outline-none focus:border-[#6A1B9A] font-mono"
+              className="px-4 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A] font-mono"
             >
               {batches.map(b => (
                 <option key={b.id} value={b.id}>
@@ -152,12 +152,12 @@ export const StaffAttendance: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Session Date</label>
+            <label className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Session Date</label>
             <input
               type="date"
               value={selectedDate}
               onChange={e => setSelectedDate(e.target.value)}
-              className="px-4 py-2 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white focus:outline-none focus:border-[#6A1B9A]"
+              className="px-4 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
             />
           </div>
         </div>
@@ -166,48 +166,48 @@ export const StaffAttendance: React.FC = () => {
           <button
             type="button"
             onClick={() => markAll('present')}
-            className="px-3.5 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold"
+            className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-semibold"
           >
             Mark All Present
           </button>
           <button
             type="button"
             onClick={() => markAll('absent')}
-            className="px-3.5 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs font-semibold"
+            className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold"
           >
             Mark All Absent
           </button>
         </div>
       </div>
 
-      <div className="p-6 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-4 shadow-xl">
+      <div className="p-6 rounded-3xl bg-white border border-purple-100 space-y-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
         <div className="flex items-center justify-between">
-          <h3 className="font-display font-bold text-base text-white flex items-center gap-2">
+          <h3 className="font-display font-bold text-base text-slate-900 flex items-center gap-2">
             <Users className="w-4 h-4 text-[#8E24AA]" />
             <span>Student Roster ({students.length})</span>
           </h3>
-          <span className="text-xs text-slate-400 font-mono">Date: {selectedDate}</span>
+          <span className="text-xs text-slate-500 font-mono">Date: {selectedDate}</span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#1A0E30] text-slate-400 uppercase font-semibold border-b border-[#2A1A4A]">
+            <thead className="bg-[#F5EFFB] text-[#6A1B9A] uppercase font-bold border-b border-purple-100">
               <tr>
                 <th className="p-3.5">Student ID</th>
                 <th className="p-3.5">Full Name</th>
                 <th className="p-3.5 text-center">Status Toggle</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A1A4A]">
+            <tbody className="divide-y divide-purple-50">
               {students.map((st: any) => {
                 const currentStatus = attendanceMap[st.id]?.status || 'present';
 
                 return (
-                  <tr key={st.id} className="hover:bg-[#1C1033] transition-colors">
-                    <td className="p-3.5 font-mono font-bold text-brand-300">{st.student_id}</td>
+                  <tr key={st.id} className="hover:bg-purple-50/50 transition-colors">
+                    <td className="p-3.5 font-mono font-bold text-[#6A1B9A]">{st.student_id}</td>
                     <td className="p-3.5">
-                      <p className="font-semibold text-white">{st.full_name}</p>
-                      <p className="text-[11px] text-slate-400">{st.email}</p>
+                      <p className="font-semibold text-slate-800">{st.full_name}</p>
+                      <p className="text-[11px] text-slate-550">{st.email}</p>
                     </td>
                     <td className="p-3.5">
                       <div className="flex items-center justify-center gap-1.5">
@@ -217,7 +217,7 @@ export const StaffAttendance: React.FC = () => {
                           className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all ${
                             currentStatus === 'present'
                               ? 'bg-emerald-600 text-white shadow-sm'
-                              : 'bg-[#0A0612] text-slate-400 hover:text-white'
+                              : 'bg-[#F5EFFB] text-slate-500 hover:text-slate-800'
                           }`}
                         >
                           Present
@@ -228,7 +228,7 @@ export const StaffAttendance: React.FC = () => {
                           className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all ${
                             currentStatus === 'absent'
                               ? 'bg-rose-600 text-white shadow-sm'
-                              : 'bg-[#0A0612] text-slate-400 hover:text-white'
+                              : 'bg-[#F5EFFB] text-slate-500 hover:text-slate-800'
                           }`}
                         >
                           Absent
@@ -239,7 +239,7 @@ export const StaffAttendance: React.FC = () => {
                           className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all ${
                             currentStatus === 'leave'
                               ? 'bg-amber-600 text-white shadow-sm'
-                              : 'bg-[#0A0612] text-slate-400 hover:text-white'
+                              : 'bg-[#F5EFFB] text-slate-500 hover:text-slate-800'
                           }`}
                         >
                           Leave

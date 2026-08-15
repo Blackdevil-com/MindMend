@@ -214,19 +214,7 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Trusted Companies Ticker */}
-          <div className="mt-20 pt-10 border-t border-purple-100/80 text-center space-y-4">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-              Powered by top brands & hiring partners
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 opacity-70 grayscale hover:grayscale-0 transition-all text-slate-600 font-bold text-lg sm:text-xl">
-              <span className="flex items-center gap-1.5"><MicrosoftLogo /> Microsoft</span>
-              <span className="flex items-center gap-1.5"><GoogleLogo /> Google</span>
-              <span className="flex items-center gap-1.5">airbnb</span>
-              <span className="flex items-center gap-1.5">Uber</span>
-              <span className="flex items-center gap-1.5">slack</span>
-            </div>
-          </div>
+          {/* Brands ticker removed */}
         </div>
       </section>
 
@@ -436,12 +424,7 @@ export const HomePage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-6 pt-0 border-t border-slate-100 mt-4 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs text-slate-400 line-through mr-1 font-medium">$99.99</span>
-                    <span className="text-lg font-black text-slate-900">$49.99</span>
-                  </div>
-
+                <div className="p-6 pt-0 border-t border-slate-100 mt-4 flex items-center justify-end">
                   <Link
                     to={`/courses/${course.slug}`}
                     className="px-4 py-2 rounded-xl bg-[#6A1B9A] hover:bg-[#52137a] text-white text-xs font-bold shadow-md transition-all flex items-center gap-1"
@@ -696,7 +679,7 @@ export const HomePage: React.FC = () => {
                 <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
                   <MessageSquare className="w-4 h-4 fill-white" />
                 </div>
-                <span className="text-xs font-semibold">contact@mindmend.edu</span>
+                <span className="text-xs font-semibold">mindmendtraining@gmail.com</span>
               </div>
 
               <Link

@@ -85,11 +85,11 @@ export const AdminInternships: React.FC = () => {
     <div className="space-y-8 max-w-7xl mx-auto pb-12 select-none">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-white flex items-center gap-3">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 flex items-center gap-3">
             <Briefcase className="w-7 h-7 text-[#8E24AA]" />
             <span>Corporate Internship Applications</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-505 font-medium mt-1">
             Review candidate applications, shortlisted talents, and reviewer notes.
           </p>
         </div>
@@ -103,23 +103,23 @@ export const AdminInternships: React.FC = () => {
         </button>
       </div>
 
-      <div className="p-4 rounded-3xl bg-[#120B20] border border-[#2A1A4A] flex items-center justify-between shadow-md">
+      <div className="p-4 rounded-3xl bg-white border border-purple-100 flex items-center justify-between shadow-sm">
         <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
           <input
             type="text"
             placeholder="Search candidate, domain..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#6A1B9A]"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#6A1B9A]"
           />
         </div>
       </div>
 
-      <div className="p-6 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-4 shadow-xl">
+      <div className="p-6 rounded-3xl bg-white border border-purple-100 space-y-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#1A0E30] text-slate-400 uppercase font-semibold border-b border-[#2A1A4A]">
+            <thead className="bg-[#F5EFFB] text-[#6A1B9A] uppercase font-bold border-b border-purple-100">
               <tr>
                 <th className="p-3.5">Candidate</th>
                 <th className="p-3.5">Domain Track</th>
@@ -128,17 +128,17 @@ export const AdminInternships: React.FC = () => {
                 <th className="p-3.5 text-right">Review</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A1A4A]">
+            <tbody className="divide-y divide-purple-50">
               {filteredApps.map(app => (
-                <tr key={app.id} className="hover:bg-[#1C1033] transition-colors">
+                <tr key={app.id} className="hover:bg-purple-50/50 transition-colors">
                   <td className="p-3.5">
-                    <p className="font-semibold text-white">{app.full_name}</p>
-                    <p className="text-[11px] text-slate-400">{app.email}</p>
+                    <p className="font-semibold text-slate-800">{app.full_name}</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">{app.email}</p>
                   </td>
-                  <td className="p-3.5 font-bold text-brand-300">{app.domain}</td>
-                  <td className="p-3.5 text-slate-300">{app.college}</td>
+                  <td className="p-3.5 font-bold text-[#6A1B9A]">{app.domain}</td>
+                  <td className="p-3.5 text-slate-650">{app.college}</td>
                   <td className="p-3.5">
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-850 border border-emerald-200">
                       {app.status}
                     </span>
                   </td>
@@ -167,11 +167,11 @@ export const AdminInternships: React.FC = () => {
         {selectedApp && (
           <form onSubmit={handleUpdateStatus} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Decision Status</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Decision Status</label>
               <select
                 value={newStatus}
                 onChange={e => setNewStatus(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white focus:outline-none focus:border-[#6A1B9A]"
+                className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
               >
                 <option value="under_review">Under Review</option>
                 <option value="shortlisted">Shortlisted</option>
@@ -181,13 +181,13 @@ export const AdminInternships: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Reviewer Feedback Note</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Reviewer Feedback Note</label>
               <textarea
                 rows={3}
                 value={feedback}
                 onChange={e => setFeedback(e.target.value)}
                 placeholder="Candidate feedback..."
-                className="w-full px-3.5 py-2.5 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#6A1B9A] resize-none"
+                className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#6A1B9A] resize-none"
               />
             </div>
 
@@ -195,7 +195,7 @@ export const AdminInternships: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setReviewModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-slate-105 text-slate-700 text-xs font-semibold hover:bg-slate-200 border border-slate-200"
               >
                 Cancel
               </button>

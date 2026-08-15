@@ -92,11 +92,11 @@ export const StaffAnnouncements: React.FC = () => {
     <div className="space-y-8 max-w-5xl mx-auto pb-12 select-none">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-white flex items-center gap-3">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 flex items-center gap-3">
             <Bell className="w-7 h-7 text-[#8E24AA]" />
             <span>Staff Announcement Hub</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
             Publish notices, lab reminders, and schedule updates to your cohort.
           </p>
         </div>
@@ -114,20 +114,20 @@ export const StaffAnnouncements: React.FC = () => {
         {announcements.map((ann: any) => (
           <div
             key={ann.id}
-            className="p-6 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-3 shadow-md hover:border-[#6A1B9A]/60 transition-all"
+            className="p-6 rounded-3xl bg-white border border-purple-100 space-y-3 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] hover:border-[#6A1B9A]/60 transition-all"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-[#6A1B9A]/20 text-brand-300 border border-[#6A1B9A]/40 uppercase">
+              <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-[#F5EFFB] text-[#6A1B9A] border border-purple-200 uppercase">
                 Batch: {ann.batch_name || 'FS-2026-A'}
               </span>
-              <span className="text-xs text-slate-400 flex items-center gap-1">
+              <span className="text-xs text-slate-500 flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5 text-[#8E24AA]" />
                 {new Date(ann.created_at).toLocaleDateString()}
               </span>
             </div>
 
-            <h3 className="font-display font-bold text-lg text-white">{ann.title}</h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{ann.content}</p>
+            <h3 className="font-display font-bold text-lg text-slate-900">{ann.title}</h3>
+            <p className="text-xs sm:text-sm text-slate-650 leading-relaxed font-medium">{ann.content}</p>
           </div>
         ))}
       </div>
@@ -140,11 +140,11 @@ export const StaffAnnouncements: React.FC = () => {
       >
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Target Cohort</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Target Cohort</label>
             <select
               value={formData.target_id}
               onChange={e => setFormData({ ...formData, target_id: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white focus:outline-none focus:border-[#6A1B9A] font-mono"
+              className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A] font-mono"
             >
               {batches.map(b => (
                 <option key={b.id} value={b.id}>
@@ -155,26 +155,26 @@ export const StaffAnnouncements: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Announcement Title *</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Announcement Title *</label>
             <input
               type="text"
               required
               value={formData.title}
               onChange={e => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g. Tomorrow Lab Instructions"
-              className="w-full px-3.5 py-2.5 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white focus:outline-none focus:border-[#6A1B9A]"
+              className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Message Content *</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Message Content *</label>
             <textarea
               rows={4}
               required
               value={formData.content}
               onChange={e => setFormData({ ...formData, content: e.target.value })}
               placeholder="Type your message for students..."
-              className="w-full px-3.5 py-2.5 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white focus:outline-none focus:border-[#6A1B9A] resize-none"
+              className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A] resize-none"
             />
           </div>
 
@@ -182,7 +182,7 @@ export const StaffAnnouncements: React.FC = () => {
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200"
             >
               Cancel
             </button>

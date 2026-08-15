@@ -251,21 +251,21 @@ export const AdminTests: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-12">
+    <div className="space-y-8 max-w-7xl mx-auto pb-12 select-none">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-white">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900">
             Online Examination & Test Management
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-505 font-medium mt-1">
             Create, duplicate, publish, configure timers and passing criteria, and inspect candidate scores.
           </p>
         </div>
 
         <button
           onClick={openCreateModal}
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white text-xs font-bold shadow-glow-sm flex items-center gap-1.5 transition-all"
+          className="px-5 py-2.5 rounded-xl bg-[#6A1B9A] hover:bg-[#8E24AA] text-white text-xs font-bold shadow-glow-sm flex items-center gap-1.5 transition-all"
         >
           <PlusCircle className="w-4 h-4" />
           <span>Create Assessment</span>
@@ -273,10 +273,10 @@ export const AdminTests: React.FC = () => {
       </div>
 
       {/* Tests Table */}
-      <div className="p-6 rounded-3xl bg-[#0F172A] border border-slate-800 space-y-4 shadow-xl">
+      <div className="p-6 rounded-3xl bg-white border border-purple-100 space-y-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-900/80 text-slate-400 uppercase font-semibold border-b border-slate-800">
+            <thead className="bg-[#F5EFFB] text-[#6A1B9A] uppercase font-bold border-b border-purple-100">
               <tr>
                 <th className="p-3.5">Test Title</th>
                 <th className="p-3.5">Subject</th>
@@ -288,21 +288,21 @@ export const AdminTests: React.FC = () => {
                 <th className="p-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-purple-50">
               {tests.map(t => (
-                <tr key={t.id} className="hover:bg-slate-800/40 transition-colors">
+                <tr key={t.id} className="hover:bg-purple-50/50 transition-colors">
                   <td className="p-3.5">
-                    <p className="font-bold text-white text-sm">{t.title}</p>
-                    <p className="text-[11px] text-slate-400 font-mono">Marks: {t.total_marks} (Passing: {t.passing_marks})</p>
+                    <p className="font-bold text-slate-800 text-sm">{t.title}</p>
+                    <p className="text-[11px] text-slate-550 font-mono mt-0.5">Marks: {t.total_marks} (Passing: {t.passing_marks})</p>
                   </td>
-                  <td className="p-3.5 text-brand-300 font-semibold">{t.subject}</td>
-                  <td className="p-3.5 text-slate-300 font-mono">{t.duration_minutes} Mins</td>
-                  <td className="p-3.5 font-bold text-white">{t.questions_count || 0} Qs</td>
-                  <td className="p-3.5 font-mono text-cyan-300">{t.batch_name || 'All Batches'}</td>
+                  <td className="p-3.5 text-[#6A1B9A] font-bold">{t.subject}</td>
+                  <td className="p-3.5 text-slate-700 font-mono">{t.duration_minutes} Mins</td>
+                  <td className="p-3.5 font-bold text-slate-800">{t.questions_count || 0} Qs</td>
+                  <td className="p-3.5 font-mono text-cyan-800 font-semibold">{t.batch_name || 'All Batches'}</td>
                   <td className="p-3.5">
                     <button
                       onClick={() => openSubmissions(t.id)}
-                      className="px-2.5 py-1 rounded-lg bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-500/30 font-bold text-xs"
+                      className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-xs"
                     >
                       {t.submissions_count || 0} Attempts
                     </button>
@@ -312,8 +312,8 @@ export const AdminTests: React.FC = () => {
                       onClick={() => togglePublish(t)}
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase transition-all ${
                         t.status === 'published'
-                          ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30'
-                          : 'bg-slate-800 text-slate-400'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          : 'bg-slate-100 text-slate-600 border border-slate-200'
                       }`}
                     >
                       {t.status}
@@ -323,7 +323,7 @@ export const AdminTests: React.FC = () => {
                     <div className="flex items-center justify-end gap-1.5">
                       <button
                         onClick={() => openEditModal(t.id)}
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+                        className="p-1.5 rounded-lg bg-[#FAFAFE] hover:bg-purple-50 border border-purple-100 text-slate-500 hover:text-[#6A1B9A]"
                         title="Edit Test & Questions"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -331,7 +331,7 @@ export const AdminTests: React.FC = () => {
 
                       <button
                         onClick={() => handleDuplicate(t.id)}
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-brand-400"
+                        className="p-1.5 rounded-lg bg-[#FAFAFE] hover:bg-purple-50 border border-purple-100 text-purple-650"
                         title="Duplicate Test"
                       >
                         <Copy className="w-3.5 h-3.5" />
@@ -339,7 +339,7 @@ export const AdminTests: React.FC = () => {
 
                       <button
                         onClick={() => handleExportCSV(t.id)}
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400"
+                        className="p-1.5 rounded-lg bg-[#FAFAFE] hover:bg-purple-50 border border-purple-100 text-emerald-650"
                         title="Export CSV"
                       >
                         <Download className="w-3.5 h-3.5" />
@@ -347,7 +347,7 @@ export const AdminTests: React.FC = () => {
 
                       <button
                         onClick={() => handleDelete(t.id)}
-                        className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/40 text-rose-400"
+                        className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600"
                         title="Delete"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -372,29 +372,29 @@ export const AdminTests: React.FC = () => {
         {selectedSubmissionsData && (
           <div className="space-y-4 text-xs">
             {/* Quick stats */}
-            <div className="grid grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+            <div className="grid grid-cols-4 gap-3 p-4 rounded-2xl bg-[#F5EFFB] border border-purple-200 text-center">
               <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Submissions</span>
-                <span className="font-bold text-white text-base">{selectedSubmissionsData.metrics.total_submissions}</span>
+                <span className="text-[10px] text-[#6A1B9A] uppercase font-bold block">Submissions</span>
+                <span className="font-bold text-slate-900 text-base">{selectedSubmissionsData.metrics.total_submissions}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Average Score</span>
-                <span className="font-bold text-brand-300 text-base">{selectedSubmissionsData.metrics.avg_percentage}%</span>
+                <span className="text-[10px] text-[#6A1B9A] uppercase font-bold block">Average Score</span>
+                <span className="font-bold text-purple-750 text-base">{selectedSubmissionsData.metrics.avg_percentage}%</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Highest Score</span>
-                <span className="font-bold text-emerald-400 text-base">{selectedSubmissionsData.metrics.highest_score}</span>
+                <span className="text-[10px] text-[#6A1B9A] uppercase font-bold block">Highest Score</span>
+                <span className="font-bold text-emerald-700 text-base">{selectedSubmissionsData.metrics.highest_score}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Pass Rate</span>
-                <span className="font-bold text-cyan-400 text-base">{selectedSubmissionsData.metrics.pass_rate}%</span>
+                <span className="text-[10px] text-[#6A1B9A] uppercase font-bold block">Pass Rate</span>
+                <span className="font-bold text-cyan-700 text-base">{selectedSubmissionsData.metrics.pass_rate}%</span>
               </div>
             </div>
 
             {/* Table */}
-            <div className="max-h-64 overflow-y-auto border border-slate-800 rounded-2xl">
+            <div className="max-h-64 overflow-y-auto border border-purple-100 rounded-2xl">
               <table className="w-full text-left">
-                <thead className="bg-slate-900 text-slate-400 font-semibold uppercase text-[10px] sticky top-0">
+                <thead className="bg-[#F5EFFB] text-[#6A1B9A] font-bold uppercase text-[10px] sticky top-0 border-b border-purple-100">
                   <tr>
                     <th className="p-3">Student ID</th>
                     <th className="p-3">Candidate</th>
@@ -403,16 +403,16 @@ export const AdminTests: React.FC = () => {
                     <th className="p-3">Result</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-purple-50">
                   {selectedSubmissionsData.submissions?.map((sub: any) => (
-                    <tr key={sub.id} className="hover:bg-slate-800/40">
-                      <td className="p-3 font-mono font-bold text-brand-300">{sub.student_id}</td>
-                      <td className="p-3 font-semibold text-white">{sub.student_name}</td>
-                      <td className="p-3 font-mono font-bold text-slate-200">{sub.score} / {sub.total_marks}</td>
-                      <td className="p-3 font-bold">{sub.percentage}%</td>
+                    <tr key={sub.id} className="hover:bg-purple-50/50">
+                      <td className="p-3 font-mono font-bold text-[#6A1B9A]">{sub.student_id}</td>
+                      <td className="p-3 font-semibold text-slate-800">{sub.student_name}</td>
+                      <td className="p-3 font-mono font-bold text-slate-700">{sub.score} / {sub.total_marks}</td>
+                      <td className="p-3 font-bold text-slate-800">{sub.percentage}%</td>
                       <td className="p-3">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          sub.passed ? 'bg-emerald-950 text-emerald-300' : 'bg-rose-950 text-rose-300'
+                        <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold ${
+                          sub.passed ? 'bg-emerald-100 text-emerald-800 border border-emerald-250' : 'bg-rose-100 text-rose-800 border border-rose-250'
                         }`}>
                           {sub.passed ? 'PASSED' : 'FAILED'}
                         </span>
@@ -437,23 +437,23 @@ export const AdminTests: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6 max-h-[75vh] overflow-y-auto pr-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Test Title *</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Test Title *</label>
               <input
                 type="text"
                 required
                 value={testForm.title}
                 onChange={e => setTestForm({ ...testForm, title: e.target.value })}
                 placeholder="e.g. Core Java Assessment"
-                className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500"
+                className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Subject *</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Subject *</label>
               <select
                 value={testForm.subject}
                 onChange={e => setTestForm({ ...testForm, subject: e.target.value })}
-                className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500"
+                className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
               >
                 <option value="Java Programming">Java Programming</option>
                 <option value="Power BI">Power BI</option>
@@ -466,47 +466,47 @@ export const AdminTests: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Duration (Min) *</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Duration (Min) *</label>
               <input
                 type="number"
                 min="5"
                 required
                 value={testForm.duration_minutes}
                 onChange={e => setTestForm({ ...testForm, duration_minutes: Number(e.target.value) })}
-                className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500"
+                className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Total Marks *</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Total Marks *</label>
               <input
                 type="number"
                 min="1"
                 required
                 value={testForm.total_marks}
                 onChange={e => setTestForm({ ...testForm, total_marks: Number(e.target.value) })}
-                className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500"
+                className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Passing Marks *</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Passing Marks *</label>
               <input
                 type="number"
                 min="1"
                 required
                 value={testForm.passing_marks}
                 onChange={e => setTestForm({ ...testForm, passing_marks: Number(e.target.value) })}
-                className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500"
+                className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Target Batch</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Target Batch</label>
               <select
                 value={testForm.batch_id}
                 onChange={e => setTestForm({ ...testForm, batch_id: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500"
+                className="w-full px-3 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
               >
                 <option value="">All Batches</option>
                 {batches.map(b => (
@@ -519,15 +519,15 @@ export const AdminTests: React.FC = () => {
           </div>
 
           {/* Question Builder */}
-          <div className="space-y-4 pt-4 border-t border-slate-800">
+          <div className="space-y-4 pt-4 border-t border-purple-100">
             <div className="flex items-center justify-between">
-              <h4 className="font-display font-bold text-sm text-white">
+              <h4 className="font-display font-bold text-sm text-slate-900">
                 Questions ({questions.length})
               </h4>
               <button
                 type="button"
                 onClick={addQuestion}
-                className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold flex items-center gap-1"
+                className="px-3 py-1.5 rounded-lg bg-[#6A1B9A] hover:bg-[#8E24AA] text-white text-xs font-semibold flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Question</span>
@@ -535,14 +535,14 @@ export const AdminTests: React.FC = () => {
             </div>
 
             {questions.map((q, idx) => (
-              <div key={idx} className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+              <div key={idx} className="p-4 rounded-2xl bg-purple-50/40 border border-purple-100 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-brand-300">Question #{idx + 1}</span>
+                  <span className="font-bold text-xs text-[#6A1B9A]">Question #{idx + 1}</span>
                   <div className="flex items-center gap-2">
                     <select
                       value={q.question_type}
                       onChange={e => updateQuestion(idx, 'question_type', e.target.value as QuestionType)}
-                      className="px-2.5 py-1 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white"
+                      className="px-2.5 py-1 bg-white border border-purple-200 rounded-lg text-xs text-slate-900"
                     >
                       <option value="mcq">Multiple Choice</option>
                       <option value="true_false">True / False</option>
@@ -552,7 +552,7 @@ export const AdminTests: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => removeQuestion(idx)}
-                      className="p-1 rounded text-rose-400 hover:bg-rose-950/60"
+                      className="p-1 rounded text-rose-600 hover:bg-rose-50"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -565,7 +565,7 @@ export const AdminTests: React.FC = () => {
                   placeholder="Question text..."
                   value={q.question_text}
                   onChange={e => updateQuestion(idx, 'question_text', e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500"
+                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
                 />
 
                 {q.question_type === 'mcq' && (
@@ -575,28 +575,28 @@ export const AdminTests: React.FC = () => {
                       placeholder="Option A"
                       value={q.option_a || ''}
                       onChange={e => updateQuestion(idx, 'option_a', e.target.value)}
-                      className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white"
+                      className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-xs text-slate-900"
                     />
                     <input
                       type="text"
                       placeholder="Option B"
                       value={q.option_b || ''}
                       onChange={e => updateQuestion(idx, 'option_b', e.target.value)}
-                      className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white"
+                      className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-xs text-slate-900"
                     />
                     <input
                       type="text"
                       placeholder="Option C"
                       value={q.option_c || ''}
                       onChange={e => updateQuestion(idx, 'option_c', e.target.value)}
-                      className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white"
+                      className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-xs text-slate-900"
                     />
                     <input
                       type="text"
                       placeholder="Option D"
                       value={q.option_d || ''}
                       onChange={e => updateQuestion(idx, 'option_d', e.target.value)}
-                      className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white"
+                      className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-xs text-slate-900"
                     />
                   </div>
                 )}
@@ -608,32 +608,32 @@ export const AdminTests: React.FC = () => {
                     placeholder="Exact Correct Answer *"
                     value={q.correct_answer || ''}
                     onChange={e => updateQuestion(idx, 'correct_answer', e.target.value)}
-                    className="px-3 py-1.5 bg-brand-950/60 border border-brand-500/40 rounded-lg text-xs text-white"
+                    className="px-3 py-1.5 bg-emerald-50 border border-emerald-250 rounded-lg text-xs text-emerald-800 placeholder-emerald-600"
                   />
                   <input
                     type="text"
                     placeholder="Explanation (Optional)"
                     value={q.explanation || ''}
                     onChange={e => updateQuestion(idx, 'explanation', e.target.value)}
-                    className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white"
+                    className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-xs text-slate-900"
                   />
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+          <div className="flex justify-end gap-3 pt-4 border-t border-purple-100">
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-glow-sm flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-[#6A1B9A] hover:bg-[#8E24AA] text-white text-xs font-bold shadow-glow-sm flex items-center gap-2"
             >
               <Send className="w-3.5 h-3.5" />
               <span>{submitting ? 'Saving Assessment...' : 'Save & Publish Assessment'}</span>

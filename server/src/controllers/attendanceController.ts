@@ -226,3 +226,32 @@ export const exportAttendanceCSV = (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Failed to export attendance' });
   }
 };
+
+export const getBatchAttendanceStats = (req: Request, res: Response) => {
+  try {
+    const { batch_id } = req.query;
+    if (!batch_id) {
+      return res.status(400).json({ error: 'Batch ID is required' });
+    }
+
+    const studentsStats = db.prepare(`
+      SELECT 
+        s.id,
+        s.student_id,
+        s.full_name,
+        (SELECT COUNT(*) FROM attendance a WHERE a.student_id = s.id AND a.batch_id = ? AND a.status = 'present') as present_days,
+        (SELECT COUNT(*) FROM attendance a WHERE a.student_id = s.id AND a.batch_id = ? AND a.status = 'absent') as absent_days,
+        (SELECT COUNT(*) FROM attendance a WHERE a.student_id = s.id AND a.batch_id = ? AND a.status = 'leave') as leave_days,
+        (SELECT COUNT(*) FROM attendance a WHERE a.student_id = s.id AND a.batch_id = ?) as total_days
+      FROM batch_students bs
+      JOIN students s ON bs.student_id = s.id
+      WHERE bs.batch_id = ?
+      ORDER BY s.student_id ASC
+    `).all(batch_id, batch_id, batch_id, batch_id, batch_id);
+
+    return res.json({ batch_stats: studentsStats });
+  } catch (error: any) {
+    console.error('Error in getBatchAttendanceStats:', error);
+    return res.status(500).json({ error: 'Failed to retrieve attendance statistics' });
+  }
+};

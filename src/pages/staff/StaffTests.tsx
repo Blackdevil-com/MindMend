@@ -129,11 +129,11 @@ export const StaffTests: React.FC = () => {
     <div className="space-y-8 max-w-6xl mx-auto pb-12 select-none">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-white flex items-center gap-3">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 flex items-center gap-3">
             <FileCheck2 className="w-7 h-7 text-[#8E24AA]" />
             <span>Online Tests & Question Bank</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
             Create structured MCQ/True-False quizzes and assign them to your student cohorts.
           </p>
         </div>
@@ -147,10 +147,10 @@ export const StaffTests: React.FC = () => {
         </button>
       </div>
 
-      <div className="p-6 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-4 shadow-xl">
+      <div className="p-6 rounded-3xl bg-white border border-purple-100 space-y-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#1A0E30] text-slate-400 uppercase font-semibold border-b border-[#2A1A4A]">
+            <thead className="bg-[#F5EFFB] text-[#6A1B9A] uppercase font-bold border-b border-purple-100">
               <tr>
                 <th className="p-3.5">Test Title</th>
                 <th className="p-3.5">Subject</th>
@@ -161,16 +161,16 @@ export const StaffTests: React.FC = () => {
                 <th className="p-3.5">Avg Score</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A1A4A]">
+            <tbody className="divide-y divide-purple-50">
               {tests.map((test: any) => (
-                <tr key={test.id} className="hover:bg-[#1C1033] transition-colors">
-                  <td className="p-3.5 font-semibold text-white">{test.title}</td>
-                  <td className="p-3.5 text-brand-300 font-bold">{test.subject}</td>
-                  <td className="p-3.5 font-mono text-slate-300">{test.batch_name || 'All Batches'}</td>
-                  <td className="p-3.5 text-slate-400">{test.duration_minutes} Mins</td>
-                  <td className="p-3.5 font-bold text-slate-200">{test.total_marks} (Pass: {test.passing_marks})</td>
-                  <td className="p-3.5 font-bold text-emerald-400">{test.submissions_count || 24}</td>
-                  <td className="p-3.5 font-bold text-white">{test.avg_percentage}%</td>
+                <tr key={test.id} className="hover:bg-purple-50/50 transition-colors">
+                  <td className="p-3.5 font-semibold text-slate-800">{test.title}</td>
+                  <td className="p-3.5 text-[#6A1B9A] font-bold">{test.subject}</td>
+                  <td className="p-3.5 font-mono text-slate-600">{test.batch_name || 'All Batches'}</td>
+                  <td className="p-3.5 text-slate-500">{test.duration_minutes} Mins</td>
+                  <td className="p-3.5 font-bold text-slate-700">{test.total_marks} (Pass: {test.passing_marks})</td>
+                  <td className="p-3.5 font-bold text-emerald-600">{test.submissions_count || 24}</td>
+                  <td className="p-3.5 font-bold text-slate-800">{test.avg_percentage}%</td>
                 </tr>
               ))}
             </tbody>
@@ -188,23 +188,23 @@ export const StaffTests: React.FC = () => {
         <form onSubmit={handleCreateTest} className="space-y-6 max-h-[75vh] overflow-y-auto pr-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Test Title *</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Test Title *</label>
               <input
                 type="text"
                 required
                 value={testForm.title}
                 onChange={e => setTestForm({ ...testForm, title: e.target.value })}
                 placeholder="e.g. Full-Stack State Management Quiz"
-                className="w-full px-3.5 py-2 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white focus:outline-none focus:border-[#6A1B9A]"
+                className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Subject *</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Subject *</label>
               <select
                 value={testForm.subject}
                 onChange={e => setTestForm({ ...testForm, subject: e.target.value })}
-                className="w-full px-3.5 py-2 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white focus:outline-none focus:border-[#6A1B9A]"
+                className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
               >
                 <option value="Java Programming">Java Programming</option>
                 <option value="Web Architecture">Web Architecture</option>
@@ -214,11 +214,11 @@ export const StaffTests: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-[#2A1A4A]">
+          <div className="flex justify-end gap-3 pt-4 border-t border-purple-100">
             <button
               type="button"
               onClick={() => setCreateModalOpen(false)}
-              className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200"
             >
               Cancel
             </button>

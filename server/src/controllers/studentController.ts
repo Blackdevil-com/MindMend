@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
 import { db } from '../config/database.js';
 import { AuthRequest } from '../middleware/auth.js';
 
@@ -82,17 +83,35 @@ export const getStudentById = (req: Request, res: Response) => {
     `).all(student.id);
 
     // Get test attempts & performance
-    const testAttempts = db.prepare(`
-      SELECT 
-        ta.*,
-        t.title as test_title,
-        t.subject,
-        t.duration_minutes
-      FROM test_attempts ta
-      JOIN tests t ON ta.test_id = t.id
-      WHERE ta.student_id = ?
-      ORDER BY ta.id DESC
-    `).all(student.id);
+    const isRequesterStudent = (req as any).user && (req as any).user.role === 'student';
+    const testAttempts = isRequesterStudent
+      ? db.prepare(`
+          SELECT 
+            ta.id, ta.test_id, ta.student_id, ta.start_time, ta.submitted_at, ta.status, ta.total_marks,
+            CASE WHEN t.marks_released = 1 THEN ta.score ELSE NULL END as score,
+            CASE WHEN t.marks_released = 1 THEN ta.percentage ELSE NULL END as percentage,
+            CASE WHEN t.marks_released = 1 THEN ta.passed ELSE NULL END as passed,
+            t.title as test_title,
+            t.subject,
+            t.duration_minutes,
+            t.marks_released
+          FROM test_attempts ta
+          JOIN tests t ON ta.test_id = t.id
+          WHERE ta.student_id = ?
+          ORDER BY ta.id DESC
+        `).all(student.id)
+      : db.prepare(`
+          SELECT 
+            ta.*,
+            t.title as test_title,
+            t.subject,
+            t.duration_minutes,
+            t.marks_released
+          FROM test_attempts ta
+          JOIN tests t ON ta.test_id = t.id
+          WHERE ta.student_id = ?
+          ORDER BY ta.id DESC
+        `).all(student.id);
 
     // Get attendance summary
     const attendanceRecords = db.prepare(`
@@ -250,8 +269,8 @@ export const getStudentDashboardStats = (req: AuthRequest, res: Response) => {
       SELECT t.*, 
         (SELECT id FROM test_attempts ta WHERE ta.test_id = t.id AND ta.student_id = ?) as attempt_id,
         (SELECT status FROM test_attempts ta WHERE ta.test_id = t.id AND ta.student_id = ?) as attempt_status,
-        (SELECT score FROM test_attempts ta WHERE ta.test_id = t.id AND ta.student_id = ?) as attempt_score,
-        (SELECT percentage FROM test_attempts ta WHERE ta.test_id = t.id AND ta.student_id = ?) as attempt_percentage
+        CASE WHEN t.marks_released = 1 THEN (SELECT score FROM test_attempts ta WHERE ta.test_id = t.id AND ta.student_id = ?) ELSE NULL END as attempt_score,
+        CASE WHEN t.marks_released = 1 THEN (SELECT percentage FROM test_attempts ta WHERE ta.test_id = t.id AND ta.student_id = ?) ELSE NULL END as attempt_percentage
       FROM tests t
       WHERE t.status = 'published' 
         AND (t.batch_id = ? OR t.batch_id IS NULL)
@@ -344,5 +363,43 @@ export const exportStudentsCSV = (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('Error in exportStudentsCSV:', error);
     return res.status(500).json({ error: 'Export failed' });
+  }
+};
+
+export const deleteStudentAndUser = (req: Request, res: Response) => {
+  try {
+    const { id } = req.params; // student.id
+    const student = db.prepare('SELECT user_id FROM students WHERE id = ?').get(id) as any;
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    db.prepare('DELETE FROM users WHERE id = ?').run(student.user_id);
+    return res.json({ message: 'Student and associated user account removed successfully' });
+  } catch (error: any) {
+    console.error('Error in deleteStudentAndUser:', error);
+    return res.status(500).json({ error: 'Failed to remove student account' });
+  }
+};
+
+export const changeStudentPassword = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params; // student.id
+    const { password } = req.body;
+    if (!password || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    const student = db.prepare('SELECT user_id FROM students WHERE id = ?').get(id) as any;
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(hash, student.user_id);
+    return res.json({ message: 'Password updated successfully' });
+  } catch (error: any) {
+    console.error('Error in changeStudentPassword:', error);
+    return res.status(500).json({ error: 'Failed to update password' });
   }
 };

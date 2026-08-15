@@ -100,7 +100,7 @@ export const StudentCourses: React.FC = () => {
       {/* 1. Enrolled Courses Grid */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-display font-extrabold text-xl text-white flex items-center gap-2">
+          <h2 className="font-display font-extrabold text-xl text-slate-900 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-[#8E24AA]" />
             <span>Active Courses ({courses.length})</span>
           </h2>
@@ -110,39 +110,39 @@ export const StudentCourses: React.FC = () => {
           {courses.map(course => (
             <div
               key={course.id}
-              className="p-6 rounded-3xl bg-[#120B20] border border-[#2A1A4A] hover:border-[#6A1B9A]/60 transition-all space-y-4 flex flex-col justify-between shadow-lg"
+              className="p-6 rounded-3xl bg-white border border-purple-100 hover:border-[#6A1B9A]/60 transition-all space-y-4 flex flex-col justify-between shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]"
             >
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-[#6A1B9A]/20 text-brand-300 border border-[#6A1B9A]/40 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-[#F5EFFB] text-[#6A1B9A] border border-purple-200 uppercase tracking-wider">
                     {course.category || 'Development'}
                   </span>
-                  <span className="text-xs text-slate-400 font-mono flex items-center gap-1">
+                  <span className="text-xs text-slate-500 font-mono flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" />
                     {course.duration || '6 Weeks'}
                   </span>
                 </div>
 
-                <h3 className="font-display font-bold text-lg text-white">{course.title}</h3>
-                <p className="text-xs text-slate-300 leading-relaxed line-clamp-2">{course.description}</p>
+                <h3 className="font-display font-bold text-lg text-slate-900">{course.title}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{course.description}</p>
 
                 {/* Progress bar */}
                 <div className="space-y-1.5 pt-2">
-                  <div className="flex justify-between text-xs text-slate-300 font-medium">
+                  <div className="flex justify-between text-xs text-slate-550 font-medium">
                     <span>Course Completion Progress</span>
-                    <span className="font-mono text-brand-300 font-bold">{course.progress || 70}%</span>
+                    <span className="font-mono text-[#6A1B9A] font-bold">{course.progress || 70}%</span>
                   </div>
-                  <div className="w-full h-2.5 bg-[#0A0612] rounded-full overflow-hidden border border-[#2A1A4A]">
+                  <div className="w-full h-2.5 bg-purple-50 rounded-full overflow-hidden border border-purple-100">
                     <div
-                      className="h-full bg-gradient-to-r from-[#6A1B9A] to-[#8E24AA] rounded-full transition-all duration-500"
+                      className="h-full bg-purple-gradient rounded-full transition-all duration-500"
                       style={{ width: `${course.progress || 70}%` }}
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#2A1A4A] flex items-center justify-between">
-                <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+              <div className="pt-4 border-t border-purple-100 flex items-center justify-between">
+                <span className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Enrolled & Active</span>
                 </span>
@@ -161,13 +161,13 @@ export const StudentCourses: React.FC = () => {
       </div>
 
       {/* 2. Explore Other Catalog Courses */}
-      <div className="space-y-6 pt-6 border-t border-[#2A1A4A]">
+      <div className="space-y-6 pt-6 border-t border-purple-100">
         <div>
-          <h2 className="font-display font-extrabold text-xl text-white flex items-center gap-2">
+          <h2 className="font-display font-extrabold text-xl text-slate-900 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-[#8E24AA]" />
             <span>Explore Enterprise Catalog</span>
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             Expand your job readiness with accredited certifications in Cloud, Backend, and AI.
           </p>
         </div>
@@ -176,18 +176,18 @@ export const StudentCourses: React.FC = () => {
           {filteredAll.filter(c => !enrolledCourseIds.has(c.id)).map(course => (
             <div
               key={course.id}
-              className="p-5 rounded-3xl bg-[#120B20] border border-[#2A1A4A] hover:border-[#6A1B9A]/50 transition-all space-y-4 flex flex-col justify-between shadow-md"
+              className="p-5 rounded-3xl bg-white border border-purple-100 hover:border-[#6A1B9A]/50 transition-all space-y-4 flex flex-col justify-between shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]"
             >
               <div className="space-y-2">
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#1A0E30] text-slate-400 border border-[#2A1A4A]">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#F5EFFB] text-slate-600 border border-purple-200">
                   {course.category}
                 </span>
-                <h4 className="font-bold text-sm text-white">{course.title}</h4>
-                <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">{course.description}</p>
+                <h4 className="font-bold text-sm text-slate-900">{course.title}</h4>
+                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{course.description}</p>
               </div>
 
-              <div className="pt-3 border-t border-[#2A1A4A] flex items-center justify-between">
-                <span className="text-xs text-slate-400 font-medium">{course.duration}</span>
+              <div className="pt-3 border-t border-purple-100 flex items-center justify-between">
+                <span className="text-xs text-slate-500 font-medium">{course.duration}</span>
                 <button
                   onClick={() => handleEnrollCourse(course.title)}
                   className="px-3 py-1.5 rounded-xl bg-[#6A1B9A] hover:bg-[#8E24AA] text-white text-xs font-bold transition-all shadow-glow-sm flex items-center gap-1"
