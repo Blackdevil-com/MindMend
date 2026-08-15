@@ -5,13 +5,13 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAa1VilPPpz9SI4rdJ9BXjfjFKcKpmTln8",
-  authDomain: "mindmend-2005.firebaseapp.com",
-  projectId: "mindmend-2005",
-  storageBucket: "mindmend-2005.firebasestorage.app",
-  messagingSenderId: "1060185489373",
-  appId: "1:1060185489373:web:5d3a2a3ba2ab78de2ac034",
-  measurementId: "G-J0K000S537"
+  apiKey: "AIzaSyAlILn6CG6m3fTr9Nf-yg_kzEHjmCrHeGY",
+  authDomain: "mindmend-53d0a.firebaseapp.com",
+  projectId: "mindmend-53d0a",
+  storageBucket: "mindmend-53d0a.firebasestorage.app",
+  messagingSenderId: "815161017988",
+  appId: "1:815161017988:web:a5927e13a22b9cbeaa24d1",
+  measurementId: "G-KFRV4BGPRY"
 };
 
 // Initialize Firebase App
