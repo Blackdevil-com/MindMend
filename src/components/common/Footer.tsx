@@ -144,15 +144,15 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2.5 text-xs sm:text-sm">
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-brand-400 mt-0.5 flex-shrink-0" />
-                <span>MindMend Tech Hub, 4th Floor, Electronic City Phase 1, Bangalore, KA 560100</span>
+                <span>N0.629 KOSAPETTAI STREET, KADAMBANALLUR, RANIPET DISTRICT, TAMILNADU- 631151</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-brand-400 flex-shrink-0" />
-                <span>+91 98765 43210 / +91 80 4123 4567</span>
+                <span>+91 93456 38887 | +91 79043 33423 | 9360700500</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-brand-400 flex-shrink-0" />
-                <span>contact@mindmend.edu</span>
+                <span>mindmendtraining@gmail.com</span>
               </li>
             </ul>
           </div>

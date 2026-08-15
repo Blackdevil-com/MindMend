@@ -99,11 +99,11 @@ export const AdminBatches: React.FC = () => {
     <div className="space-y-8 max-w-7xl mx-auto pb-12 select-none">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-white flex items-center gap-3">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 flex items-center gap-3">
             <Layers className="w-7 h-7 text-[#8E24AA]" />
             <span>Training Batch Management</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-505 font-medium mt-1">
             Create cohort batches (e.g. FS-2026-A), assign staff trainers, and track rosters.
           </p>
         </div>
@@ -117,10 +117,10 @@ export const AdminBatches: React.FC = () => {
         </button>
       </div>
 
-      <div className="p-6 rounded-3xl bg-[#120B20] border border-[#2A1A4A] space-y-4 shadow-xl">
+      <div className="p-6 rounded-3xl bg-white border border-purple-100 space-y-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#1A0E30] text-slate-400 uppercase font-semibold border-b border-[#2A1A4A]">
+            <thead className="bg-[#F5EFFB] text-[#6A1B9A] uppercase font-bold border-b border-purple-100">
               <tr>
                 <th className="p-3.5">Batch Code</th>
                 <th className="p-3.5">Course Program</th>
@@ -130,18 +130,18 @@ export const AdminBatches: React.FC = () => {
                 <th className="p-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A1A4A]">
+            <tbody className="divide-y divide-purple-50">
               {batches.map((b: any) => (
-                <tr key={b.id} className="hover:bg-[#1C1033] transition-colors">
-                  <td className="p-3.5 font-mono font-bold text-brand-300 text-sm">{b.name}</td>
-                  <td className="p-3.5 font-semibold text-white">{b.course_title}</td>
-                  <td className="p-3.5 text-slate-300">{b.trainer_name || 'Dr. Sarah Jenkins'}</td>
-                  <td className="p-3.5 text-slate-400 font-mono">{b.timing}</td>
-                  <td className="p-3.5 font-bold text-[#8E24AA] font-mono">{b.student_count || 24} Students</td>
+                <tr key={b.id} className="hover:bg-purple-50/50 transition-colors">
+                  <td className="p-3.5 font-mono font-bold text-[#6A1B9A] text-sm">{b.name}</td>
+                  <td className="p-3.5 font-semibold text-slate-800">{b.course_title}</td>
+                  <td className="p-3.5 text-slate-650">{b.trainer_name || 'Dr. Sarah Jenkins'}</td>
+                  <td className="p-3.5 text-slate-500 font-mono">{b.timing}</td>
+                  <td className="p-3.5 font-bold text-[#6A1B9A] font-mono">{b.student_count || 24} Students</td>
                   <td className="p-3.5 text-right">
                     <button
                       onClick={() => handleDeleteBatch(b.id)}
-                      className="p-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 transition-colors"
+                      className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-100 text-rose-600 transition-colors"
                       title="Delete Batch"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -162,26 +162,26 @@ export const AdminBatches: React.FC = () => {
       >
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Batch Code Name *</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Batch Code Name *</label>
             <input
               type="text"
               required
               value={formData.name}
               onChange={e => setFormData({ ...formData, name: e.target.value.toUpperCase() })}
               placeholder="e.g. FS-2026-B"
-              className="w-full px-3.5 py-2.5 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white font-mono focus:outline-none focus:border-[#6A1B9A]"
+              className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 font-mono focus:outline-none focus:border-[#6A1B9A]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Schedule Timing *</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Schedule Timing *</label>
             <input
               type="text"
               required
               value={formData.timing}
               onChange={e => setFormData({ ...formData, timing: e.target.value })}
               placeholder="Mon-Fri, 10:00 AM - 12:30 PM"
-              className="w-full px-3.5 py-2.5 bg-[#0A0612] border border-[#3D276B] rounded-xl text-xs text-white focus:outline-none focus:border-[#6A1B9A]"
+              className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
             />
           </div>
 
@@ -189,7 +189,7 @@ export const AdminBatches: React.FC = () => {
             <button
               type="button"
               onClick={() => setCreateModalOpen(false)}
-              className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200"
             >
               Cancel
             </button>

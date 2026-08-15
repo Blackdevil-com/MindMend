@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../../services/api';
 import {
   FileCheck2,
@@ -15,15 +15,28 @@ import {
 export const StudentTests: React.FC = () => {
   const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'completed'>('all');
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  
+  const getInitialFilter = () => {
+    if (tabParam === 'pending' || tabParam === 'completed') return tabParam;
+    return 'all';
+  };
+  
+  const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'completed'>(getInitialFilter);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
+    if (tabParam === 'pending' || tabParam === 'completed') {
+      setActiveFilter(tabParam);
+    } else {
+      setActiveFilter('all');
+    }
+  }, [tabParam]);
+
+  useEffect(() => {
     api.get('/students/dashboard-stats')
-      .then(res => setTests(res.active_tests || [
-        { id: 1, title: 'Full-Stack React & Custom Hooks Assessment', subject: 'Web Architecture', duration_minutes: 30, total_marks: 50, passing_marks: 25, attempt_status: 'pending' },
-        { id: 2, title: 'Database Normalization & SQL Queries', subject: 'Database Systems', duration_minutes: 45, total_marks: 100, passing_marks: 50, attempt_status: 'submitted', attempt_score: 46, attempt_percentage: 92, attempt_id: 101 },
-      ]))
+      .then(res => setTests(res.active_tests || []))
       .catch(err => console.error('Failed to load tests', err))
       .finally(() => setLoading(false));
   }, []);
@@ -141,16 +154,26 @@ export const StudentTests: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                         <span className="text-xs font-bold text-emerald-700">
-                          Score: {test.attempt_score}/{test.total_marks} ({test.attempt_percentage}%)
+                          {test.attempt_score !== null ? (
+                            `Score: ${test.attempt_score}/${test.total_marks} (${test.attempt_percentage}%)`
+                          ) : (
+                            "Marks Pending Release"
+                          )}
                         </span>
                       </div>
 
-                      <Link
-                        to={`/student/results/${test.attempt_id || 1}`}
-                        className="px-4 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-[#6A1B9A] text-xs font-bold transition-colors"
-                      >
-                        View Breakdown
-                      </Link>
+                      {test.attempt_score !== null ? (
+                        <Link
+                          to={`/student/results/${test.attempt_id || 1}`}
+                          className="px-4 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-[#6A1B9A] text-xs font-bold transition-colors"
+                        >
+                          View Breakdown
+                        </Link>
+                      ) : (
+                        <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-3 py-1 rounded-xl">
+                          Pending Release
+                        </span>
+                      )}
                     </>
                   ) : (
                     <>

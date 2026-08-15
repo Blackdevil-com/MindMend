@@ -67,3 +67,17 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+
+# Build output
+dist/
+
+# Local runtime files
+.active-port
+
+# SQLite runtime files
+*.db-shm
+*.db-wal
+
+# Local database
+data/*.db

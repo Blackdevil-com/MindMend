@@ -141,14 +141,6 @@ export const DashboardLayout: React.FC = () => {
 
             {/* Header Right Actions */}
             <div className="flex items-center gap-3">
-              {/* Live Class Launcher */}
-              <button
-                onClick={() => setClassroomOpen(true)}
-                className="px-4 py-2 rounded-xl bg-purple-gradient text-white text-xs font-bold shadow-glow-purple flex items-center gap-2 hover:opacity-95 transition-all"
-              >
-                <Video className="w-4 h-4" />
-                <span className="hidden sm:inline">Join Live Classroom</span>
-              </button>
 
               {/* Direct Messages */}
               <button

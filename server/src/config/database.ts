@@ -48,6 +48,8 @@ export function initDatabase() {
       year_of_study TEXT NOT NULL,
       avatar_url TEXT,
       bio TEXT,
+      linkedin_url TEXT,
+      github_url TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
@@ -63,6 +65,9 @@ export function initDatabase() {
       designation TEXT NOT NULL,
       can_create_tests INTEGER DEFAULT 1,
       avatar_url TEXT,
+      bio TEXT,
+      linkedin_url TEXT,
+      github_url TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
@@ -137,6 +142,7 @@ export function initDatabase() {
       batch_id INTEGER,
       created_by INTEGER NOT NULL,
       status TEXT CHECK(status IN ('draft', 'published', 'archived')) DEFAULT 'published',
+      marks_released INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE SET NULL,
       FOREIGN KEY (batch_id) REFERENCES batches(id) ON DELETE SET NULL,
@@ -288,6 +294,26 @@ export function initDatabase() {
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    -- Pending staff (waiting for verification)
+    CREATE TABLE IF NOT EXISTS pending_staff (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      full_name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      phone TEXT NOT NULL,
+      designation TEXT NOT NULL,
+      staff_id TEXT UNIQUE NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- Sent email logs for admin view & audit
+    CREATE TABLE IF NOT EXISTS sent_emails (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      recipient_email TEXT NOT NULL,
+      subject TEXT NOT NULL,
+      body_html TEXT NOT NULL,
+      sent_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
     -- Indexes for high-speed queries
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
     CREATE INDEX IF NOT EXISTS idx_students_user_id ON students(user_id);
@@ -299,6 +325,17 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_test_attempts_student ON test_attempts(student_id);
     CREATE INDEX IF NOT EXISTS idx_attendance_batch_date ON attendance(batch_id, date);
     CREATE INDEX IF NOT EXISTS idx_internship_apps_status ON internship_applications(status);
+    CREATE INDEX IF NOT EXISTS idx_pending_staff_email ON pending_staff(email);
+    CREATE INDEX IF NOT EXISTS idx_sent_emails_recipient ON sent_emails(recipient_email);
   `);
+  try {
+    db.exec("ALTER TABLE tests ADD COLUMN marks_released INTEGER DEFAULT 0");
+    console.log("⚡ Added marks_released column to tests table.");
+  } catch (e) {}
+  try { db.exec("ALTER TABLE students ADD COLUMN linkedin_url TEXT"); } catch (e) {}
+  try { db.exec("ALTER TABLE students ADD COLUMN github_url TEXT"); } catch (e) {}
+  try { db.exec("ALTER TABLE staff ADD COLUMN bio TEXT"); } catch (e) {}
+  try { db.exec("ALTER TABLE staff ADD COLUMN linkedin_url TEXT"); } catch (e) {}
+  try { db.exec("ALTER TABLE staff ADD COLUMN github_url TEXT"); } catch (e) {}
   console.log('✅ SQLite Database initialized successfully with all tables and indexes.');
 }

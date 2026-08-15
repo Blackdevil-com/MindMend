@@ -56,24 +56,24 @@ export const AdminCMS: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto pb-12">
+    <div className="space-y-8 max-w-6xl mx-auto pb-12 select-none">
       <div>
-        <h1 className="font-display font-black text-2xl sm:text-3xl text-white">
+        <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900">
           Content & Inquiries Management
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400">
+        <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
           Manage public contact inquiries, candidate lead requests, and student testimonials.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#0F172A] border border-slate-800 w-fit">
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#F5EFFB] border border-purple-100 w-fit">
         <button
           onClick={() => setActiveTab('messages')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
             activeTab === 'messages'
-              ? 'bg-brand-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-[#6A1B9A] text-white shadow-sm'
+              : 'text-slate-600 hover:text-slate-800'
           }`}
         >
           <Mail className="w-4 h-4" />
@@ -83,8 +83,8 @@ export const AdminCMS: React.FC = () => {
           onClick={() => setActiveTab('testimonials')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
             activeTab === 'testimonials'
-              ? 'bg-brand-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-[#6A1B9A] text-white shadow-sm'
+              : 'text-slate-600 hover:text-slate-800'
           }`}
         >
           <Star className="w-4 h-4" />
@@ -96,26 +96,28 @@ export const AdminCMS: React.FC = () => {
       {activeTab === 'messages' && (
         <div className="space-y-4">
           {messages.length === 0 ? (
-            <div className="p-12 rounded-3xl bg-[#0F172A] border border-slate-800 text-center text-xs text-slate-400">
+            <div className="p-12 rounded-3xl bg-white border border-purple-100 text-center text-xs text-slate-500 shadow-sm">
               No inquiries in the contact inbox.
             </div>
           ) : (
             messages.map(msg => (
               <div
                 key={msg.id}
-                className="p-6 rounded-3xl bg-[#0F172A] border border-slate-800 space-y-3 shadow-sm hover:border-slate-700 transition-all"
+                className="p-6 rounded-3xl bg-white border border-purple-100 space-y-3 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] hover:border-[#6A1B9A]/60 transition-all"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-purple-100">
                   <div>
-                    <h3 className="font-bold text-base text-white">{msg.name}</h3>
-                    <p className="text-xs text-slate-400 font-mono">
+                    <h3 className="font-bold text-base text-slate-900">{msg.name}</h3>
+                    <p className="text-xs text-slate-500 font-mono mt-0.5">
                       {msg.email} • {msg.phone || 'No phone'}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                      msg.status === 'replied' ? 'bg-emerald-950 text-emerald-300' : 'bg-amber-950 text-amber-300'
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
+                      msg.status === 'replied'
+                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                        : 'bg-amber-100 text-amber-800 border-amber-200'
                     }`}>
                       {msg.status}
                     </span>
@@ -125,9 +127,9 @@ export const AdminCMS: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <span className="text-xs font-bold text-brand-300 block">Subject: {msg.subject}</span>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800/80">
+                <div className="space-y-1.5">
+                  <span className="text-xs font-bold text-[#6A1B9A] block">Subject: {msg.subject}</span>
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-[#FAFAFE] p-3.5 rounded-2xl border border-purple-100">
                     "{msg.message}"
                   </p>
                 </div>
@@ -136,7 +138,7 @@ export const AdminCMS: React.FC = () => {
                   <div className="flex justify-end pt-2">
                     <button
                       onClick={() => handleMarkReplied(msg.id)}
-                      className="px-3 py-1.5 bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold flex items-center gap-1.5"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Mark as Replied</span>
@@ -155,24 +157,24 @@ export const AdminCMS: React.FC = () => {
           {testimonials.map(t => (
             <div
               key={t.id}
-              className="p-6 rounded-3xl bg-[#0F172A] border border-slate-800 space-y-4"
+              className="p-6 rounded-3xl bg-white border border-purple-100 space-y-4 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]"
             >
-              <div className="flex items-center gap-1 text-amber-400">
+              <div className="flex items-center gap-1 text-amber-500">
                 {[...Array(t.rating || 5)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-current" />
                 ))}
               </div>
 
-              <p className="text-xs text-slate-300 italic leading-relaxed">
+              <p className="text-xs text-slate-650 italic leading-relaxed font-medium">
                 "{t.content}"
               </p>
 
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-3 border-t border-purple-100 flex items-center justify-between">
                 <div>
-                  <h4 className="font-bold text-xs text-white">{t.name}</h4>
-                  <p className="text-[11px] text-brand-300 font-semibold">{t.role}</p>
+                  <h4 className="font-bold text-xs text-slate-900">{t.name}</h4>
+                  <p className="text-[11px] text-[#6A1B9A] font-bold mt-0.5">{t.role}</p>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-950 text-brand-300 border border-brand-500/30">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#F5EFFB] text-[#6A1B9A] border border-purple-200">
                   {t.company_or_college}
                 </span>
               </div>

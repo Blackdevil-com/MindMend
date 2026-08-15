@@ -42,12 +42,7 @@ export const StudentDashboard: React.FC = () => {
   const [activeClassTitle, setActiveClassTitle] = useState('Full-Stack React & Node.js Workshop');
 
   // Interactive Tasks State
-  const [tasks, setTasks] = useState([
-    { id: 1, text: 'Study React Custom Hooks & State', time: '09:00 AM', status: 'completed', category: 'Frontend' },
-    { id: 2, text: 'Design Figma UI Mockups for Dashboard', time: '11:30 AM', status: 'completed', category: 'UI/UX' },
-    { id: 3, text: 'Complete Node.js Express API Assignment', time: '02:00 PM', status: 'pending', category: 'Backend' },
-    { id: 4, text: 'Review Data Structures MCQ Question Bank', time: '04:30 PM', status: 'pending', category: 'Algorithms' },
-  ]);
+  const [tasks, setTasks] = useState<any[]>([]);
 
   const [taskFilter, setTaskFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [newTaskText, setNewTaskText] = useState('');
@@ -57,13 +52,7 @@ export const StudentDashboard: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState('November 2026');
   const [selectedDay, setSelectedDay] = useState(14);
 
-  // Daily Schedule Timeline State
-  const scheduleItems = [
-    { time: '09:00 AM', title: 'Envato UX Design Masterclass', trainer: 'Dr. Sarah Jenkins', status: 'Completed', live: false },
-    { time: '10:30 AM', title: 'Git & Vercel Production Pipelines', trainer: 'Prof. Alex Rivera', status: 'In Progress', live: true },
-    { time: '02:00 PM', title: 'Database Indexing & SQLite Optimization', trainer: 'Tech Desk', status: 'Upcoming', live: false },
-    { time: '04:00 PM', title: 'Mock Technical Interview Session', trainer: 'Placement Cell', status: 'Upcoming', live: false },
-  ];
+  // Daily Schedule Timeline State (computed dynamically)
 
   useEffect(() => {
     api.get('/students/dashboard-stats')
@@ -118,11 +107,10 @@ export const StudentDashboard: React.FC = () => {
 
   const student = data?.student || user?.profile;
   const stats = data?.stats || {};
-  const courses = data?.courses || [
-    { id: 1, title: 'Envato Masterclass: Web UI & UX Design', category: 'Design', progress: 85, lessons: '24/30', instructor: 'Sarah Jenkins' },
-    { id: 2, title: 'Mastering Git & Vercel Deployment', category: 'DevOps', progress: 60, lessons: '12/20', instructor: 'Alex Rivera' },
-    { id: 3, title: 'Full Stack MERN & SQLite Architecture', category: 'Development', progress: 40, lessons: '16/40', instructor: 'MindMend Staff' },
-  ];
+  const courses = data?.courses || [];
+  const scheduleItems = data?.batch ? [
+    { time: data.batch.timing || '09:00 AM - 11:30 AM', title: `${data.batch.name} Batch Session`, trainer: 'Lead Instructor', status: 'Active', live: true }
+  ] : [];
 
   const filteredTasks = tasks.filter(t => {
     if (taskFilter === 'completed') return t.status === 'completed';
@@ -152,7 +140,7 @@ export const StudentDashboard: React.FC = () => {
             </div>
 
             <h1 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl leading-tight">
-              Unlock High-Level Access & Enterprise Skills 👋
+              Unlock High-Level Access & Enterprise Skills 
             </h1>
 
             <p className="text-xs sm:text-sm text-purple-100 opacity-95 leading-relaxed">
@@ -179,7 +167,7 @@ export const StudentDashboard: React.FC = () => {
             <span className="text-xs text-slate-500 font-semibold">Courses Enrolled</span>
             <BookOpen className="w-4 h-4 text-[#6A1B9A]" />
           </div>
-          <p className="font-display font-black text-2xl text-slate-900">{stats.enrolled_courses || 3}</p>
+          <p className="font-display font-black text-2xl text-slate-900">{stats.enrolled_courses || 0}</p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-purple-100 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] space-y-2">
@@ -187,7 +175,7 @@ export const StudentDashboard: React.FC = () => {
             <span className="text-xs text-slate-500 font-semibold">Tests Attempted</span>
             <FileCheck2 className="w-4 h-4 text-emerald-600" />
           </div>
-          <p className="font-display font-black text-2xl text-slate-900">{stats.tests_completed || 8}</p>
+          <p className="font-display font-black text-2xl text-slate-900">{stats.tests_completed || 0}</p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-purple-100 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] space-y-2">
@@ -195,7 +183,7 @@ export const StudentDashboard: React.FC = () => {
             <span className="text-xs text-slate-500 font-semibold">Average Score</span>
             <Award className="w-4 h-4 text-amber-500" />
           </div>
-          <p className="font-display font-black text-2xl text-slate-900">{stats.average_score || 92}%</p>
+          <p className="font-display font-black text-2xl text-slate-900">{stats.average_score || 0}%</p>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-purple-100 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] space-y-2">
@@ -203,7 +191,7 @@ export const StudentDashboard: React.FC = () => {
             <span className="text-xs text-slate-500 font-semibold">Attendance Rate</span>
             <CalendarCheck className="w-4 h-4 text-cyan-600" />
           </div>
-          <p className="font-display font-black text-2xl text-slate-900">{stats.attendance_percentage || 96}%</p>
+          <p className="font-display font-black text-2xl text-slate-900">{stats.attendance_percentage || 100}%</p>
         </div>
       </div>
 
@@ -253,16 +241,13 @@ export const StudentDashboard: React.FC = () => {
 
                   {/* Actions */}
                   <div className="flex items-center justify-between pt-1">
-                    <button
-                      onClick={() => {
-                        setActiveClassTitle(c.title);
-                        setClassroomOpen(true);
-                      }}
+                    <Link
+                      to="/student/courses"
                       className="px-3.5 py-1.5 rounded-xl bg-[#6A1B9A] hover:bg-[#8E24AA] text-white text-xs font-bold transition-all shadow-glow-sm flex items-center gap-1.5"
                     >
                       <PlayCircle className="w-3.5 h-3.5" />
                       <span>Continue</span>
-                    </button>
+                    </Link>
 
                     <Link
                       to="/student/courses"
@@ -439,18 +424,7 @@ export const StudentDashboard: React.FC = () => {
 
                     <h5 className="font-extrabold text-xs text-slate-900 leading-snug">{item.title}</h5>
 
-                    {item.live && (
-                      <button
-                        onClick={() => {
-                          setActiveClassTitle(item.title);
-                          setClassroomOpen(true);
-                        }}
-                        className="w-full py-1.5 rounded-xl bg-purple-gradient text-white text-[11px] font-extrabold transition-all shadow-glow-purple flex items-center justify-center gap-1.5"
-                      >
-                        <Video className="w-3.5 h-3.5" />
-                        <span>Join Live Classroom</span>
-                      </button>
-                    )}
+                    {/* Join Live Classroom Button Hidden */}
                   </div>
                 </div>
               ))}

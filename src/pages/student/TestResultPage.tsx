@@ -77,6 +77,32 @@ export const TestResultPage: React.FC = () => {
   const wrongCount = breakdown.filter((b: any) => !b.is_correct && b.selected_answer).length;
   const unansweredCount = breakdown.filter((b: any) => !b.selected_answer).length;
 
+  if (attempt.score === null || attempt.marks_released === 0) {
+    return (
+      <div className="max-w-xl mx-auto my-12 p-8 rounded-3xl bg-white border border-purple-100 text-center space-y-6 shadow-[0_4px_25px_-3px_rgba(106,27,154,0.08)] select-none">
+        <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto text-[#6A1B9A]">
+          <CheckCircle2 className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="font-display font-black text-xl text-slate-900">
+            Assessment Submitted Successfully!
+          </h2>
+          <p className="text-xs text-slate-550 font-semibold leading-relaxed">
+            Your responses for <strong className="text-slate-800">{attempt.test_title} ({attempt.subject})</strong> have been recorded.
+          </p>
+          <div className="p-4 rounded-2xl bg-[#F5EFFB] border border-purple-50 text-[11px] text-[#6A1B9A] font-bold mt-4">
+            🔒 The trainer or admin has not released the marks yet. Please check back later.
+          </div>
+        </div>
+        <div className="pt-2">
+          <Link to="/student/tests" className="inline-block px-5 py-2.5 bg-[#6A1B9A] hover:bg-[#8E24AA] rounded-xl text-white text-xs font-bold shadow-glow-purple transition-all">
+            Back to Assessments List
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-5xl mx-auto space-y-10 pb-16 select-none">
       {/* 1. Scorecard Hero */}

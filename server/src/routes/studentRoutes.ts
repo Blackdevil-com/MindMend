@@ -7,6 +7,8 @@ import {
   assignStudentToCourse,
   getStudentDashboardStats,
   exportStudentsCSV,
+  deleteStudentAndUser,
+  changeStudentPassword,
 } from '../controllers/studentController.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
 
@@ -24,5 +26,7 @@ router.get('/:id', verifyToken, requireRole(['admin', 'staff', 'student']), getS
 router.patch('/:id/status', verifyToken, requireRole(['admin']), updateStudentStatus);
 router.post('/assign-batch', verifyToken, requireRole(['admin']), assignStudentToBatch);
 router.post('/assign-course', verifyToken, requireRole(['admin']), assignStudentToCourse);
+router.delete('/:id', verifyToken, requireRole(['admin']), deleteStudentAndUser);
+router.post('/:id/change-password', verifyToken, requireRole(['admin']), changeStudentPassword);
 
 export default router;

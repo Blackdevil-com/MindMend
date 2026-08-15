@@ -7,6 +7,7 @@ import {
   deleteTest,
   duplicateTest,
   toggleTestStatus,
+  toggleTestMarksVisibility,
   getTestForStudent,
   submitTestAttempt,
   getAttemptResult,
@@ -30,6 +31,7 @@ router.put('/:id', verifyToken, requireRole(['admin', 'staff']), updateTest);
 router.delete('/:id', verifyToken, requireRole(['admin', 'staff']), deleteTest);
 router.post('/:id/duplicate', verifyToken, requireRole(['admin', 'staff']), duplicateTest);
 router.patch('/:id/status', verifyToken, requireRole(['admin', 'staff']), toggleTestStatus);
+router.patch('/:id/toggle-marks', verifyToken, requireRole(['admin', 'staff']), toggleTestMarksVisibility);
 
 // Submissions & CSV Export
 router.get('/:id/submissions', verifyToken, requireRole(['admin', 'staff']), getTestSubmissions);

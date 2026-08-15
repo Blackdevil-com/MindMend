@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { db } from '../config/database.js';
 import { generateToken, AuthRequest } from '../middleware/auth.js';
+import { sendMail, compileStudentWelcomeTemplate } from '../services/emailService.js';
 
 // Helper to generate the next unique Student ID: e.g. STU20260001
 export function generateNextStudentID(): string {
@@ -112,6 +113,18 @@ export const registerStudent = async (req: Request, res: Response) => {
 
     const { userId, studentInternalId } = transaction();
 
+    // Dispatch welcome email asynchronously
+    sendMail({
+      to: email.toLowerCase().trim(),
+      subject: 'Welcome to MindMend Academy! 🎓',
+      html: compileStudentWelcomeTemplate({
+        full_name: full_name.trim(),
+        student_id,
+        email: email.toLowerCase().trim(),
+        loginUrl: `${req.protocol}://${req.get('host') || 'localhost:8081'}/login`
+      })
+    }).catch(err => console.error('Failed to dispatch student welcome email:', err));
+
     const token = generateToken({
       id: userId,
       email: email.toLowerCase().trim(),
@@ -153,33 +166,20 @@ export const login = async (req: Request, res: Response) => {
 
     const cleanIdentifier = identifier.trim();
 
+    if (!cleanIdentifier.includes('@')) {
+      return res.status(400).json({ error: 'Please enter a valid registered email address. ID login is disabled.' });
+    }
+
     let user: any = null;
     let studentInfo: any = null;
     let staffInfo: any = null;
 
-    // Check if identifier is a Student ID (starts with STU)
-    if (cleanIdentifier.toUpperCase().startsWith('STU')) {
-      studentInfo = db.prepare('SELECT * FROM students WHERE student_id = ?').get(cleanIdentifier.toUpperCase());
-      if (studentInfo) {
-        user = db.prepare('SELECT * FROM users WHERE id = ?').get(studentInfo.user_id);
-      }
-    }
-    // Check if identifier is a Staff ID (starts with STF)
-    else if (cleanIdentifier.toUpperCase().startsWith('STF')) {
-      staffInfo = db.prepare('SELECT * FROM staff WHERE staff_id = ?').get(cleanIdentifier.toUpperCase());
-      if (staffInfo) {
-        user = db.prepare('SELECT * FROM users WHERE id = ?').get(staffInfo.user_id);
-      }
-    }
-    // Otherwise treat as Email
-    else {
-      user = db.prepare('SELECT * FROM users WHERE email = ?').get(cleanIdentifier.toLowerCase());
-      if (user) {
-        if (user.role === 'student') {
-          studentInfo = db.prepare('SELECT * FROM students WHERE user_id = ?').get(user.id);
-        } else if (user.role === 'staff') {
-          staffInfo = db.prepare('SELECT * FROM staff WHERE user_id = ?').get(user.id);
-        }
+    user = db.prepare('SELECT * FROM users WHERE email = ?').get(cleanIdentifier.toLowerCase());
+    if (user) {
+      if (user.role === 'student') {
+        studentInfo = db.prepare('SELECT * FROM students WHERE user_id = ?').get(user.id);
+      } else if (user.role === 'staff') {
+        staffInfo = db.prepare('SELECT * FROM staff WHERE user_id = ?').get(user.id);
       }
     }
 
@@ -287,36 +287,105 @@ export const getCurrentUser = (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateProfile = (req: AuthRequest, res: Response) => {
+export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const { full_name, mobile, phone, college_name, bio, designation } = req.body;
+    const { 
+      full_name, 
+      mobile, 
+      phone, 
+      college_name, 
+      bio, 
+      designation, 
+      email, 
+      linkedin_url, 
+      github_url,
+      password 
+    } = req.body;
 
-    if (req.user.role === 'student') {
-      db.prepare(
-        `UPDATE students 
-         SET full_name = COALESCE(?, full_name),
-             mobile = COALESCE(?, mobile),
-             college_name = COALESCE(?, college_name),
-             bio = COALESCE(?, bio)
-         WHERE user_id = ?`
-      ).run(full_name, mobile, college_name, bio, req.user.id);
-    } else if (req.user.role === 'staff') {
-      db.prepare(
-        `UPDATE staff 
-         SET full_name = COALESCE(?, full_name),
-             phone = COALESCE(?, phone),
-             designation = COALESCE(?, designation)
-         WHERE user_id = ?`
-      ).run(full_name, phone, designation, req.user.id);
+    const userId = req.user.id;
+    const cleanEmail = email ? email.toLowerCase().trim() : null;
+
+    // Hash password beforehand if provided
+    let passwordHash: string | null = null;
+    if (password) {
+      if (password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+      }
+      passwordHash = await bcrypt.hash(password, 10);
     }
+
+    const transaction = db.transaction(() => {
+      // 1. If email is provided, check uniqueness and update
+      if (cleanEmail) {
+        const existing = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(cleanEmail, userId);
+        if (existing) {
+          throw new Error('A user with this email address already exists');
+        }
+        db.prepare('UPDATE users SET email = ? WHERE id = ?').run(cleanEmail, userId);
+
+        if (req.user!.role === 'student') {
+          db.prepare('UPDATE students SET email = ? WHERE user_id = ?').run(cleanEmail, userId);
+        } else if (req.user!.role === 'staff') {
+          db.prepare('UPDATE staff SET email = ? WHERE user_id = ?').run(cleanEmail, userId);
+        }
+      }
+
+      // 2. If password is provided, update hash
+      if (passwordHash) {
+        db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId);
+      }
+
+      // 3. Update profile tables
+      if (req.user!.role === 'student') {
+        db.prepare(
+          `UPDATE students 
+           SET full_name = COALESCE(?, full_name),
+               mobile = COALESCE(?, mobile),
+               college_name = COALESCE(?, college_name),
+               bio = COALESCE(?, bio),
+               linkedin_url = ?,
+               github_url = ?
+           WHERE user_id = ?`
+        ).run(
+          full_name ? full_name.trim() : null, 
+          mobile ? mobile.trim() : null, 
+          college_name ? college_name.trim() : null, 
+          bio ? bio.trim() : null, 
+          linkedin_url ? linkedin_url.trim() : null,
+          github_url ? github_url.trim() : null,
+          userId
+        );
+      } else if (req.user!.role === 'staff') {
+        db.prepare(
+          `UPDATE staff 
+           SET full_name = COALESCE(?, full_name),
+               phone = COALESCE(?, phone),
+               designation = COALESCE(?, designation),
+               bio = COALESCE(?, bio),
+               linkedin_url = ?,
+               github_url = ?
+           WHERE user_id = ?`
+        ).run(
+          full_name ? full_name.trim() : null, 
+          phone ? phone.trim() : null, 
+          designation ? designation.trim() : null, 
+          bio ? bio.trim() : null, 
+          linkedin_url ? linkedin_url.trim() : null,
+          github_url ? github_url.trim() : null,
+          userId
+        );
+      }
+    });
+
+    transaction();
 
     return res.json({ message: 'Profile updated successfully' });
   } catch (error: any) {
     console.error('Error in updateProfile:', error);
-    return res.status(500).json({ error: 'Failed to update profile' });
+    return res.status(400).json({ error: error.message || 'Failed to update profile' });
   }
 };

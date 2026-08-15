@@ -82,20 +82,20 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
   const activeMsgs = messages[selectedContact.id] || [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#0D0714] border border-[#6A1B9A]/40 rounded-3xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
+      <div className="bg-white border border-purple-100 rounded-3xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#2A1A4A] bg-[#140B24] flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-purple-100 bg-[#FAFAFE] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-[#6A1B9A] flex items-center justify-center text-white font-bold text-sm">
               💬
             </div>
             <div>
-              <h3 className="font-display font-bold text-base text-white">MindMend Messenger & Discussions</h3>
-              <p className="text-xs text-slate-400">Direct Messages & Trainer Assistance</p>
+              <h3 className="font-display font-bold text-base text-slate-900">MindMend Messenger & Discussions</h3>
+              <p className="text-xs text-slate-500">Direct Messages & Trainer Assistance</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
+          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-purple-50">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -103,7 +103,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
         {/* Body */}
         <div className="flex-1 flex overflow-hidden min-h-0">
           {/* Contact List */}
-          <div className="w-72 bg-[#120B20] border-r border-[#2A1A4A] flex flex-col p-3 space-y-3">
+          <div className="w-72 bg-[#FAFAFE] border-r border-purple-100 flex flex-col p-3 space-y-3">
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               <input
@@ -111,11 +111,11 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0A0612] border border-[#2A1A4A] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#6A1B9A]"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-white border border-purple-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#6A1B9A]"
               />
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-1">
+            <div className="flex-1 overflow-y-auto space-y-1 text-slate-700">
               {contacts.map(c => (
                 <button
                   key={c.id}
@@ -123,18 +123,22 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                   className={`w-full p-3 rounded-2xl flex items-center gap-3 transition-all text-left ${
                     selectedContact.id === c.id
                       ? 'bg-[#6A1B9A] text-white shadow-glow-purple'
-                      : 'hover:bg-[#1C1033] text-slate-300'
+                      : 'hover:bg-purple-50 text-slate-600'
                   }`}
                 >
                   <div className="relative">
-                    <div className="w-10 h-10 rounded-xl bg-slate-800 text-white font-bold text-xs flex items-center justify-center border border-white/10">
+                    <div className={`w-10 h-10 rounded-xl font-bold text-xs flex items-center justify-center border ${
+                      selectedContact.id === c.id
+                        ? 'bg-[#8E24AA] text-white border-purple-400'
+                        : 'bg-[#F5EFFB] text-[#6A1B9A] border-purple-200'
+                    }`}>
                       {c.avatar}
                     </div>
-                    {c.online && <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#120B20]"></span>}
+                    {c.online && <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#FAFAFE]"></span>}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-bold text-xs truncate">{c.name}</p>
-                    <p className="text-[10px] opacity-80 truncate">{c.role}</p>
+                    <p className={`font-bold text-xs truncate ${selectedContact.id === c.id ? 'text-white' : 'text-slate-900'}`}>{c.name}</p>
+                    <p className={`text-[10px] truncate ${selectedContact.id === c.id ? 'text-purple-100' : 'text-slate-500'}`}>{c.role}</p>
                   </div>
                 </button>
               ))}
@@ -142,16 +146,16 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Active Chat Conversation Area */}
-          <div className="flex-1 flex flex-col bg-[#080311]">
+          <div className="flex-1 flex flex-col bg-white">
             {/* Conversation Header */}
-            <div className="p-4 border-b border-[#2A1A4A] bg-[#100720] flex items-center justify-between">
+            <div className="p-4 border-b border-purple-100 bg-[#FAFAFE] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-[#6A1B9A] text-white font-bold text-xs flex items-center justify-center">
                   {selectedContact.avatar}
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-white">{selectedContact.name}</h4>
-                  <span className="text-[10px] text-emerald-400 font-semibold">• Active Now</span>
+                  <h4 className="font-bold text-sm text-slate-900">{selectedContact.name}</h4>
+                  <span className="text-[10px] text-emerald-600 font-semibold">• Active Now</span>
                 </div>
               </div>
             </div>
@@ -164,7 +168,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                     className={`max-w-[75%] p-3.5 rounded-2xl text-xs space-y-1 ${
                       m.isSelf
                         ? 'bg-[#6A1B9A] text-white rounded-br-none shadow-md'
-                        : 'bg-[#1C1033] text-slate-200 border border-[#2A1A4A] rounded-bl-none'
+                        : 'bg-[#F5EFFB] text-slate-800 border border-purple-100 rounded-bl-none'
                     }`}
                   >
                     <p className="leading-relaxed">{m.text}</p>
@@ -175,13 +179,13 @@ export const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
             </div>
 
             {/* Input Form */}
-            <form onSubmit={handleSendMessage} className="p-3 border-t border-[#2A1A4A] bg-[#100720] flex gap-2">
+            <form onSubmit={handleSendMessage} className="p-3 border-t border-purple-100 bg-[#FAFAFE] flex gap-2">
               <input
                 type="text"
                 value={inputMsg}
                 onChange={e => setInputMsg(e.target.value)}
                 placeholder={`Message ${selectedContact.name}...`}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-[#0A0612] border border-[#3D276B] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#6A1B9A]"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-white border border-purple-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#6A1B9A]"
               />
               <button
                 type="submit"

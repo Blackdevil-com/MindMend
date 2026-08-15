@@ -74,26 +74,26 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      <div className="bg-[#0D0714] border border-[#6A1B9A]/40 rounded-3xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden shadow-2xl shadow-purple-950/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white border border-purple-100 rounded-3xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden shadow-2xl">
         {/* Modal Header Bar */}
-        <div className="px-6 py-4 border-b border-[#2A1A4A] flex items-center justify-between bg-[#140B24]">
+        <div className="px-6 py-4 border-b border-purple-100 flex items-center justify-between bg-[#FAFAFE]">
           <div className="flex items-center gap-3">
             <span className="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
             <div>
-              <h3 className="font-display font-bold text-base sm:text-lg text-white flex items-center gap-2">
+              <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
                 <span>{className}</span>
                 <span className="px-2 py-0.5 rounded-full bg-[#6A1B9A] text-white text-[10px] uppercase font-bold tracking-wider">
                   LIVE
                 </span>
               </h3>
-              <p className="text-xs text-slate-400">Instructor: Dr. Sarah Jenkins • 48 Participants Connected</p>
+              <p className="text-xs text-slate-500">Instructor: Dr. Sarah Jenkins • 48 Participants Connected</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-purple-50 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -102,15 +102,15 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
         {/* Video Main Stage & Classroom Body */}
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
           {/* Main Stage Video Screen */}
-          <div className="flex-1 flex flex-col bg-[#050209] p-4 relative min-h-0">
-            <div className="flex-1 relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#1B0D36] via-[#100624] to-[#080214] border border-[#2A1A4A] flex items-center justify-center">
+          <div className="flex-1 flex flex-col bg-slate-50 p-4 relative min-h-0">
+            <div className="flex-1 relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#1B0D36] via-[#100624] to-[#080214] border border-purple-300 flex items-center justify-center">
               {/* Simulated Instructor Stage Screen */}
               <div className="text-center p-6 space-y-4">
                 <div className="relative inline-block">
                   <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-gradient-to-tr from-[#6A1B9A] to-[#8E24AA] flex items-center justify-center text-white font-black text-3xl shadow-glow-purple mx-auto">
                     SJ
                   </div>
-                  <span className="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-[#0D0714] rounded-full"></span>
+                  <span className="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-purple-950 rounded-full"></span>
                 </div>
                 <div>
                   <h4 className="font-display font-bold text-xl text-white">Dr. Sarah Jenkins (Presenter)</h4>
@@ -134,12 +134,12 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
             {/* Video Sub-Grid (Participants thumbnails at bottom of stage) */}
             <div className="h-24 mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
               {[
-                { name: 'Alex R.', initials: 'AR', bg: 'bg-purple-900' },
-                { name: 'Priya S.', initials: 'PS', bg: 'bg-indigo-900' },
-                { name: 'Michael K.', initials: 'MK', bg: 'bg-emerald-900' },
+                { name: 'Alex R.', initials: 'AR', bg: 'bg-purple-950' },
+                { name: 'Priya S.', initials: 'PS', bg: 'bg-indigo-950' },
+                { name: 'Michael K.', initials: 'MK', bg: 'bg-emerald-950' },
                 { name: 'You', initials: 'YOU', bg: 'bg-[#6A1B9A]' },
               ].map((p, idx) => (
-                <div key={idx} className={`rounded-xl ${p.bg} border border-[#2A1A4A] flex items-center justify-center relative p-2 overflow-hidden`}>
+                <div key={idx} className={`rounded-xl ${p.bg} border border-purple-300 flex items-center justify-center relative p-2 overflow-hidden`}>
                   <div className="w-8 h-8 rounded-full bg-white/20 text-white font-bold text-xs flex items-center justify-center">
                     {p.initials}
                   </div>
@@ -152,15 +152,15 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
           </div>
 
           {/* Right Live Chat & Attendees Panel */}
-          <div className="w-full lg:w-80 bg-[#120B20] border-t lg:border-t-0 lg:border-l border-[#2A1A4A] flex flex-col h-72 lg:h-auto">
+          <div className="w-full lg:w-80 bg-white border-t lg:border-t-0 lg:border-l border-purple-100 flex flex-col h-72 lg:h-auto">
             {/* Panel Tabs */}
-            <div className="flex border-b border-[#2A1A4A]">
+            <div className="flex border-b border-purple-100 bg-[#FAFAFE]">
               <button
                 onClick={() => setActiveTab('chat')}
                 className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-2 transition-colors ${
                   activeTab === 'chat'
-                    ? 'text-white border-b-2 border-[#6A1B9A] bg-[#1C1033]'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'text-[#6A1B9A] border-b-2 border-[#6A1B9A] bg-purple-50/50'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 <MessageSquare className="w-4 h-4 text-[#8E24AA]" />
@@ -170,8 +170,8 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
                 onClick={() => setActiveTab('participants')}
                 className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-2 transition-colors ${
                   activeTab === 'participants'
-                    ? 'text-white border-b-2 border-[#6A1B9A] bg-[#1C1033]'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'text-[#6A1B9A] border-b-2 border-[#6A1B9A] bg-purple-50/50'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 <Users className="w-4 h-4 text-[#8E24AA]" />
@@ -184,23 +184,23 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
               <div className="flex-1 flex flex-col min-h-0">
                 <div className="flex-1 p-3 overflow-y-auto space-y-3">
                   {chatMessages.map(msg => (
-                    <div key={msg.id} className="p-2.5 rounded-xl bg-[#1A0E30] border border-[#2D1B4D] space-y-1">
+                    <div key={msg.id} className="p-2.5 rounded-xl bg-[#F5EFFB] border border-purple-100 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-brand-300">{msg.sender}</span>
-                        <span className="text-[10px] text-slate-500">{msg.time}</span>
+                        <span className="text-xs font-bold text-[#6A1B9A]">{msg.sender}</span>
+                        <span className="text-[10px] text-slate-400">{msg.time}</span>
                       </div>
-                      <p className="text-xs text-slate-200">{msg.text}</p>
+                      <p className="text-xs text-slate-700">{msg.text}</p>
                     </div>
                   ))}
                 </div>
 
-                <form onSubmit={handleSendMessage} className="p-3 border-t border-[#2A1A4A] flex gap-2">
+                <form onSubmit={handleSendMessage} className="p-3 border-t border-purple-100 flex gap-2">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={e => setNewMessage(e.target.value)}
                     placeholder="Type message to class..."
-                    className="flex-1 px-3 py-2 rounded-xl bg-[#0A0612] border border-[#3D276B] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#6A1B9A]"
+                    className="flex-1 px-3 py-2 rounded-xl bg-white border border-purple-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#6A1B9A]"
                   />
                   <button
                     type="submit"
@@ -213,9 +213,9 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
             ) : (
               <div className="flex-1 p-3 overflow-y-auto space-y-2">
                 {['Dr. Sarah Jenkins (Instructor)', 'Alex Rivera', 'Priya Sharma', 'Michael Chen', 'Jessica Taylor', 'David Miller'].map((name, i) => (
-                  <div key={i} className="p-2 rounded-xl bg-[#1A0E30] border border-[#2D1B4D] flex items-center justify-between">
-                    <span className="text-xs text-white font-medium">{name}</span>
-                    <span className="text-[10px] text-emerald-400 font-bold">Online</span>
+                  <div key={i} className="p-2 rounded-xl bg-[#F5EFFB] border border-purple-100 flex items-center justify-between">
+                    <span className="text-xs text-slate-800 font-medium">{name}</span>
+                    <span className="text-[10px] text-emerald-600 font-bold">Online</span>
                   </div>
                 ))}
               </div>
@@ -224,7 +224,7 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
         </div>
 
         {/* Classroom Controls Footer Bar */}
-        <div className="p-4 bg-[#140B24] border-t border-[#2A1A4A] flex items-center justify-between gap-4">
+        <div className="p-4 bg-[#FAFAFE] border-t border-purple-100 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
@@ -232,7 +232,7 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
                 showToast(!micOn ? 'Microphone unmuted' : 'Microphone muted', undefined, 'info');
               }}
               className={`p-3 rounded-2xl transition-all ${
-                micOn ? 'bg-[#6A1B9A] text-white hover:bg-[#8E24AA]' : 'bg-rose-900/60 text-rose-300 border border-rose-500/40'
+                micOn ? 'bg-[#6A1B9A] text-white hover:bg-[#8E24AA]' : 'bg-rose-100 text-rose-600 border border-rose-200'
               }`}
             >
               {micOn ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
@@ -244,7 +244,7 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
                 showToast(!videoOn ? 'Camera turned on' : 'Camera turned off', undefined, 'info');
               }}
               className={`p-3 rounded-2xl transition-all ${
-                videoOn ? 'bg-[#6A1B9A] text-white hover:bg-[#8E24AA]' : 'bg-rose-900/60 text-rose-300 border border-rose-500/40'
+                videoOn ? 'bg-[#6A1B9A] text-white hover:bg-[#8E24AA]' : 'bg-rose-100 text-rose-600 border border-rose-200'
               }`}
             >
               {videoOn ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
@@ -253,7 +253,7 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
             <button
               onClick={toggleScreen}
               className={`p-3 rounded-2xl transition-all ${
-                screenSharing ? 'bg-amber-600 text-white' : 'bg-[#2A1A4A] text-slate-300 hover:text-white hover:bg-[#3E246B]'
+                screenSharing ? 'bg-amber-600 text-white animate-pulse' : 'bg-purple-100 text-slate-600 hover:text-slate-800 hover:bg-purple-200'
               }`}
             >
               <Monitor className="w-5 h-5" />
@@ -262,7 +262,7 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
             <button
               onClick={toggleHand}
               className={`p-3 rounded-2xl transition-all ${
-                handRaised ? 'bg-amber-500 text-white animate-bounce' : 'bg-[#2A1A4A] text-slate-300 hover:text-white hover:bg-[#3E246B]'
+                handRaised ? 'bg-amber-500 text-white animate-bounce' : 'bg-purple-100 text-slate-600 hover:text-slate-800 hover:bg-purple-200'
               }`}
             >
               <Hand className="w-5 h-5" />
@@ -274,7 +274,7 @@ export const VirtualClassroomModal: React.FC<VirtualClassroomModalProps> = ({
               onClose();
               showToast('Left virtual classroom session', undefined, 'info');
             }}
-            className="px-6 py-3 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-rose-950/40 transition-all"
+            className="px-6 py-3 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg transition-all"
           >
             <PhoneOff className="w-4 h-4" />
             <span>Leave Classroom</span>
