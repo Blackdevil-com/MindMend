@@ -18,13 +18,16 @@
     width: 6px;
     height: 6px;
   }
+
   ::-webkit-scrollbar-track {
     background: #F0EAF8;
   }
+
   ::-webkit-scrollbar-thumb {
     background: #D5C2ED;
     border-radius: 9999px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: #6A1B9A;
   }
@@ -38,9 +41,12 @@
 
 /* Animations */
 @keyframes pulse-purple {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 15px rgba(106, 27, 154, 0.2);
   }
+
   50% {
     box-shadow: 0 0 25px rgba(142, 36, 170, 0.4);
   }
@@ -49,5 +55,3 @@
 .animate-glow-purple {
   animation: pulse-purple 3s infinite ease-in-out;
 }
-
-
