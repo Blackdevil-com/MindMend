@@ -68,10 +68,11 @@ const ProtectedRoute: React.FC<{
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  const userRole = (user.role || '').toLowerCase().trim();
+  if (allowedRoles && !allowedRoles.includes(userRole as any)) {
     // Redirect to their own dashboard
-    if (user.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
-    if (user.role === 'staff') return <Navigate to="/staff/dashboard" replace />;
+    if (userRole === 'admin') return <Navigate to="/admin/dashboard" replace />;
+    if (userRole === 'staff') return <Navigate to="/staff/dashboard" replace />;
     return <Navigate to="/student/dashboard" replace />;
   }
 
