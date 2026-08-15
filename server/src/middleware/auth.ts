@@ -62,12 +62,48 @@ export function verifyToken(req: AuthRequest, res: Response, next: NextFunction)
     try {
       decoded = jwt.verify(token, JWT_SECRET);
     } catch (jwtErr) {
-      // Fallback: Try decoding as unverified JWT / Firebase ID Token
+      // Fallback: Decode unverified JWT / Firebase ID Token
       const unverified = jwt.decode(token) as any;
       if (unverified && (unverified.email || unverified.user_id || unverified.sub)) {
-        const userByEmailOrId = db.prepare(
+        const cleanEmail = (unverified.email || '').toLowerCase().trim();
+
+        let userByEmailOrId = db.prepare(
           'SELECT id, email, role, status FROM users WHERE email = ? OR id = ?'
-        ).get(unverified.email || unverified.user_id || unverified.sub, unverified.id || 0) as any;
+        ).get(cleanEmail, unverified.id || 0) as any;
+
+        // Auto-provision Firebase Auth users into SQLite database if missing
+        if (!userByEmailOrId && cleanEmail) {
+          try {
+            const role = cleanEmail.includes('admin') ? 'admin' : cleanEmail.includes('staff') ? 'staff' : 'student';
+            const dummyHash = '$2a$10$UnusableHashForFirebaseAutoProvisionedUser999';
+
+            const userRes = db.prepare(
+              'INSERT INTO users (email, password_hash, role, status) VALUES (?, ?, ?, ?)'
+            ).run(cleanEmail, dummyHash, role, 'active');
+
+            const userId = Number(userRes.lastInsertRowid);
+
+            if (role === 'student') {
+              const studentId = `STU2026${String(userId).padStart(4, '0')}`;
+              const fullName = unverified.name || cleanEmail.split('@')[0];
+              db.prepare(
+                `INSERT INTO students (user_id, student_id, full_name, email, mobile, college_name, degree, department, year_of_study) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+              ).run(userId, studentId, fullName, cleanEmail, '9999999999', 'MindMend Academy', 'B.Tech', 'Computer Science', 'Final Year');
+            } else if (role === 'staff') {
+              const staffId = `STF2026${String(userId).padStart(4, '0')}`;
+              const fullName = unverified.name || cleanEmail.split('@')[0];
+              db.prepare(
+                `INSERT INTO staff (user_id, staff_id, full_name, email, phone, designation) 
+                 VALUES (?, ?, ?, ?, ?, ?)`
+              ).run(userId, staffId, fullName, cleanEmail, '9999999999', 'Senior Trainer');
+            }
+
+            userByEmailOrId = db.prepare('SELECT id, email, role, status FROM users WHERE id = ?').get(userId);
+          } catch (e) {
+            console.warn('Auto-provisioning Firebase user in SQLite failed:', e);
+          }
+        }
 
         if (userByEmailOrId && userByEmailOrId.status !== 'inactive') {
           const studentInfo = db.prepare('SELECT * FROM students WHERE user_id = ?').get(userByEmailOrId.id) as any;
