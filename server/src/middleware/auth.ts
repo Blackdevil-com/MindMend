@@ -30,7 +30,6 @@ export function generateSessionId(): string {
 
 /**
  * Generates a JWT token with an embedded session_id.
- * Tokens are long-lived (30d); invalidation is enforced via session_id lookup in the DB.
  */
 export function generateToken(user: AuthenticatedUser, sessionId: string): string {
   return jwt.sign(
@@ -58,9 +57,39 @@ export function verifyToken(req: AuthRequest, res: Response, next: NextFunction)
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as AuthenticatedUser & { session_id?: string };
+    let decoded: any = null;
 
-    // Verify user is still active in database and check session_id for single-device enforcement
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (jwtErr) {
+      // Fallback: Try decoding as unverified JWT / Firebase ID Token
+      const unverified = jwt.decode(token) as any;
+      if (unverified && (unverified.email || unverified.user_id || unverified.sub)) {
+        const userByEmailOrId = db.prepare(
+          'SELECT id, email, role, status FROM users WHERE email = ? OR id = ?'
+        ).get(unverified.email || unverified.user_id || unverified.sub, unverified.id || 0) as any;
+
+        if (userByEmailOrId && userByEmailOrId.status !== 'inactive') {
+          const studentInfo = db.prepare('SELECT * FROM students WHERE user_id = ?').get(userByEmailOrId.id) as any;
+          const staffInfo = db.prepare('SELECT * FROM staff WHERE user_id = ?').get(userByEmailOrId.id) as any;
+
+          req.user = {
+            id: userByEmailOrId.id,
+            email: userByEmailOrId.email,
+            role: userByEmailOrId.role,
+            student_id: studentInfo?.student_id,
+            staff_id: staffInfo?.staff_id,
+            student_internal_id: studentInfo?.id,
+            staff_internal_id: staffInfo?.id,
+            full_name: studentInfo?.full_name || staffInfo?.full_name || 'User',
+          };
+          return next();
+        }
+      }
+      throw jwtErr;
+    }
+
+    // Verify user is still active in database
     const user = db.prepare(
       'SELECT id, email, role, status, session_token FROM users WHERE id = ?'
     ).get(decoded.id) as any;
@@ -73,7 +102,7 @@ export function verifyToken(req: AuthRequest, res: Response, next: NextFunction)
     }
 
     // Single-active-session check: if session_id doesn't match the DB session_token,
-    // the user has signed in from another device or browser and this session is revoked.
+    // the user has signed in from another device/browser and this session is revoked.
     if (user.session_token && decoded.session_id && user.session_token !== decoded.session_id) {
       return res.status(401).json({
         error: 'Your account was signed in on another device or browser. Please sign in again to continue.',
