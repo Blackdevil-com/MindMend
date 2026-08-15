@@ -39,17 +39,11 @@ export async function request<T = any>(
         window.location.pathname.startsWith('/staff') ||
         window.location.pathname.startsWith('/student');
 
-      if (isProtectedRoute) {
+      // Only perform automatic hard redirect if explicitly notified of device displacement
+      if (isProtectedRoute && data.code === 'DEVICE_LOGOUT') {
         localStorage.removeItem('mindmend_token');
         localStorage.removeItem('mindmend_user');
-
-        // Device logout: user signed in from another device/browser
-        if (data.code === 'DEVICE_LOGOUT') {
-          window.location.href = '/login?expired=device';
-        } else {
-          // Generic session expiry
-          window.location.href = '/login?expired=1';
-        }
+        window.location.href = '/login?expired=device';
       }
     }
     throw new Error(data.error || data.message || `Request failed with status ${response.status}`);
