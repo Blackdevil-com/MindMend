@@ -34,13 +34,22 @@ export async function request<T = any>(
 
   if (!response.ok) {
     if (response.status === 401) {
-      // Clear token if expired/invalid and not already on login page
-      if (window.location.pathname.startsWith('/admin') || 
-          window.location.pathname.startsWith('/staff') || 
-          window.location.pathname.startsWith('/student')) {
+      const isProtectedRoute =
+        window.location.pathname.startsWith('/admin') ||
+        window.location.pathname.startsWith('/staff') ||
+        window.location.pathname.startsWith('/student');
+
+      if (isProtectedRoute) {
         localStorage.removeItem('mindmend_token');
         localStorage.removeItem('mindmend_user');
-        window.location.href = '/login?expired=1';
+
+        // Device logout: user signed in from another device/browser
+        if (data.code === 'DEVICE_LOGOUT') {
+          window.location.href = '/login?expired=device';
+        } else {
+          // Generic session expiry
+          window.location.href = '/login?expired=1';
+        }
       }
     }
     throw new Error(data.error || data.message || `Request failed with status ${response.status}`);

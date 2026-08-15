@@ -29,31 +29,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Listen for Firebase Auth state changes
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-          if (userDoc.exists()) {
-            const userData = userDoc.data() as User;
-            setUser(userData);
-            localStorage.setItem('mindmend_user', JSON.stringify(userData));
-          }
-        } catch (e) {
-          console.warn('Firestore user doc load error:', e);
-        }
-      }
-      setIsLoading(false);
-    });
-
-    if (token && !user) {
+    // If we have a stored backend token, verify it's still valid by fetching current user
+    if (token) {
       refreshUser().finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);
     }
-
-    return () => unsubscribe();
-  }, [token]);
+  }, []);
 
   const refreshUser = async () => {
     try {
@@ -63,89 +45,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('mindmend_user', JSON.stringify(data.user));
       }
     } catch (err) {
+      // If refresh fails (e.g. 401 DEVICE_LOGOUT), the api.ts interceptor
+      // handles redirect to /login. Clear local state just in case.
       console.warn('Failed to refresh user auth state:', err);
+      localStorage.removeItem('mindmend_token');
+      localStorage.removeItem('mindmend_user');
+      setToken(null);
+      setUser(null);
     }
   };
 
   const login = async (identifier: string, password: string): Promise<User> => {
-    // 1. Try Firebase Auth first if identifier is email format
-    if (identifier.includes('@')) {
-      try {
-        const userCred = await signInWithEmailAndPassword(auth, identifier, password);
-        const fbUser = userCred.user;
-        
-        // Fetch or create user record in Firestore
-        let userProfile: User;
-        const userDoc = await getDoc(doc(db, 'users', fbUser.uid));
-        if (userDoc.exists()) {
-          userProfile = userDoc.data() as User;
-        } else {
-          userProfile = {
-            id: Date.now(),
-            email: fbUser.email || identifier,
-            full_name: fbUser.displayName || identifier.split('@')[0],
-            role: identifier.includes('admin') ? 'admin' : identifier.includes('staff') ? 'staff' : 'student',
-            student_id: `STU-2026-${Math.floor(Math.random() * 90 + 10)}`,
-          } as User;
-          await setDoc(doc(db, 'users', fbUser.uid), userProfile);
-        }
-
-        const fakeToken = await fbUser.getIdToken();
-        localStorage.setItem('mindmend_token', fakeToken);
-        localStorage.setItem('mindmend_user', JSON.stringify(userProfile));
-        setToken(fakeToken);
-        setUser(userProfile);
-        return userProfile;
-      } catch (firebaseErr: any) {
-        console.warn('Firebase Auth sign in failed, falling back to API:', firebaseErr.message);
-      }
-    }
-
-    // 2. Fallback to API / Database Login
+    // Always use the backend API for login so the session_token is stored in SQLite
+    // and single-device session management works correctly.
     const data = await api.post('/auth/login', { identifier, password });
     localStorage.setItem('mindmend_token', data.token);
     localStorage.setItem('mindmend_user', JSON.stringify(data.user));
     setToken(data.token);
     setUser(data.user);
+
+    // Also sign into Firebase Auth in the background for any Firebase-specific features
+    // (e.g. Firestore access). Failure here is non-blocking.
+    if (identifier.includes('@')) {
+      signInWithEmailAndPassword(auth, identifier, password).catch(() => {});
+    }
+
     return data.user;
   };
 
   const registerStudent = async (formData: any) => {
-    // Register in Firebase Auth & Firestore first
-    try {
-      const userCred = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      const fbUser = userCred.user;
-      
-      const newStudentUser: User = {
-        id: Date.now(),
-        email: formData.email,
-        full_name: formData.full_name,
-        role: 'student',
-        student_id: `STU-2026-${Math.floor(Math.random() * 90 + 10)}`,
-      } as User;
-
-      await setDoc(doc(db, 'users', fbUser.uid), newStudentUser);
-      await setDoc(doc(db, 'students', fbUser.uid), {
-        ...formData,
-        uid: fbUser.uid,
-        created_at: new Date().toISOString(),
-      });
-
-      const fakeToken = await fbUser.getIdToken();
-      localStorage.setItem('mindmend_token', fakeToken);
-      localStorage.setItem('mindmend_user', JSON.stringify(newStudentUser));
-      setToken(fakeToken);
-      setUser(newStudentUser);
-      return { token: fakeToken, user: newStudentUser };
-    } catch (e) {
-      console.warn('Firebase signup fallback to API:', e);
-    }
-
+    // Register via backend API first (generates session_token in SQLite)
     const data = await api.post('/auth/register', formData);
     localStorage.setItem('mindmend_token', data.token);
     localStorage.setItem('mindmend_user', JSON.stringify(data.user));
     setToken(data.token);
     setUser(data.user);
+
+    // Also register in Firebase in the background for any Firebase-specific features
+    createUserWithEmailAndPassword(auth, formData.email, formData.password).catch(() => {});
+
     return data;
   };
 
@@ -176,7 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isLoading,
         loading: isLoading,
-        isAuthenticated: !!user,
+        isAuthenticated: !!user && !!token,
         login,
         registerStudent,
         logout,

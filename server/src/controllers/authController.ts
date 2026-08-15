@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { db } from '../config/database.js';
-import { generateToken, AuthRequest } from '../middleware/auth.js';
+import { generateToken, generateSessionId, AuthRequest } from '../middleware/auth.js';
 import { sendMail, compileStudentWelcomeTemplate } from '../services/emailService.js';
 
 // Helper to generate the next unique Student ID: e.g. STU20260001
@@ -125,14 +125,22 @@ export const registerStudent = async (req: Request, res: Response) => {
       })
     }).catch(err => console.error('Failed to dispatch student welcome email:', err));
 
-    const token = generateToken({
-      id: userId,
-      email: email.toLowerCase().trim(),
-      role: 'student',
-      student_id,
-      student_internal_id: studentInternalId,
-      full_name: full_name.trim(),
-    });
+    const sessionId = generateSessionId();
+
+    // Store session ID in DB — invalidates any existing session on other devices/browsers
+    db.prepare('UPDATE users SET session_token = ? WHERE id = ?').run(sessionId, userId);
+
+    const token = generateToken(
+      {
+        id: userId,
+        email: email.toLowerCase().trim(),
+        role: 'student',
+        student_id,
+        student_internal_id: studentInternalId,
+        full_name: full_name.trim(),
+      },
+      sessionId
+    );
 
     return res.status(201).json({
       message: 'Student registration successful',
@@ -212,16 +220,24 @@ export const login = async (req: Request, res: Response) => {
       staffInternalId = staffInfo.id;
     }
 
-    const token = generateToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      student_id: studentId,
-      staff_id: staffId,
-      student_internal_id: studentInternalId,
-      staff_internal_id: staffInternalId,
-      full_name: fullName,
-    });
+    const sessionId = generateSessionId();
+
+    // Store session ID in DB — invalidates any existing session on other devices/browsers
+    db.prepare('UPDATE users SET session_token = ? WHERE id = ?').run(sessionId, user.id);
+
+    const token = generateToken(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        student_id: studentId,
+        staff_id: staffId,
+        student_internal_id: studentInternalId,
+        staff_internal_id: staffInternalId,
+        full_name: fullName,
+      },
+      sessionId
+    );
 
     return res.json({
       message: 'Login successful',

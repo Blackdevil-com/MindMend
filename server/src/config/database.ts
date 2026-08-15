@@ -30,6 +30,7 @@ export function initDatabase() {
       password_hash TEXT NOT NULL,
       role TEXT CHECK(role IN ('admin', 'staff', 'student')) NOT NULL,
       status TEXT CHECK(status IN ('active', 'inactive')) DEFAULT 'active',
+      session_token TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -337,5 +338,7 @@ export function initDatabase() {
   try { db.exec("ALTER TABLE staff ADD COLUMN bio TEXT"); } catch (e) {}
   try { db.exec("ALTER TABLE staff ADD COLUMN linkedin_url TEXT"); } catch (e) {}
   try { db.exec("ALTER TABLE staff ADD COLUMN github_url TEXT"); } catch (e) {}
+  // Add session_token column for single-active-device session management
+  try { db.exec("ALTER TABLE users ADD COLUMN session_token TEXT"); } catch (e) {}
   console.log('✅ SQLite Database initialized successfully with all tables and indexes.');
 }
