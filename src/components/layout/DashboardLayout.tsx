@@ -143,15 +143,7 @@ export const DashboardLayout: React.FC = () => {
             {/* Header Right Actions */}
             <div className="flex items-center gap-3">
 
-              {/* Direct Messages */}
-              <button
-                onClick={() => setChatOpen(true)}
-                className="p-2.5 rounded-xl bg-purple-50 border border-purple-100 hover:bg-purple-100 text-slate-700 hover:text-[#6A1B9A] transition-colors relative"
-                title="Messages & Live Chat"
-              >
-                <MessageSquare className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#6A1B9A] rounded-full"></span>
-              </button>
+
 
               {/* Notifications */}
               <div className="relative">

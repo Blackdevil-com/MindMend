@@ -84,6 +84,24 @@ export const StudentProfile: React.FC = () => {
       return;
     }
 
+    if (user?.role === 'student') {
+      const cleanMobile = formData.mobile.replace(/\D/g, '');
+      const isMobileValid = cleanMobile.length === 10 || (cleanMobile.length === 12 && cleanMobile.startsWith('91'));
+      if (!isMobileValid) {
+        showToast('Please enter a valid 10-digit mobile number', undefined, 'error');
+        return;
+      }
+    }
+
+    if (user?.role === 'staff') {
+      const cleanPhone = formData.phone.replace(/\D/g, '');
+      const isPhoneValid = cleanPhone.length === 10 || (cleanPhone.length === 12 && cleanPhone.startsWith('91'));
+      if (!isPhoneValid) {
+        showToast('Please enter a valid 10-digit phone number', undefined, 'error');
+        return;
+      }
+    }
+
     setLoading(true);
 
     // Build update payload - Immutable fields (email, mobile/phone, college_name) are omitted from edits

@@ -199,8 +199,8 @@ export const AdminStaff: React.FC = () => {
       full_name: st.full_name,
       phone: st.phone,
       designation: st.designation,
-      can_create_tests: st.can_create_tests,
-      status: st.account_status,
+      can_create_tests: !!st.can_create_tests,
+      status: st.account_status || 'active',
     });
     setEditModalOpen(true);
   };
@@ -956,7 +956,7 @@ export const AdminStaff: React.FC = () => {
         onClose={() => setImportModalOpen(false)}
         title="Import Trainer List"
         subtitle="Import staff data from Excel, Google Sheets, or a CSV file"
-        className="max-w-4xl"
+        maxWidth="4xl"
       >
         <div className="space-y-4">
           {importStep === 'input' ? (
@@ -1293,7 +1293,7 @@ export const AdminStaff: React.FC = () => {
         onClose={() => setViewEmailModalOpen(false)}
         title="Sent Credentials Email Audit"
         subtitle={`Audit Log for recipient: ${selectedEmail?.recipient_email}`}
-        className="max-w-2xl"
+        maxWidth="2xl"
       >
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-center justify-between text-xs bg-slate-50 border p-3.5 rounded-2xl font-semibold text-slate-600 gap-2">

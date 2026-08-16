@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { registerStudent, login, getCurrentUser, updateProfile } from '../controllers/authController.js';
+import { registerStudent, login, getCurrentUser, updateProfile, forgotPassword } from '../controllers/authController.js';
 import { verifyToken } from '../middleware/auth.js';
 
 const router = Router();
 
 router.post('/register', registerStudent);
 router.post('/login', login);
+router.post('/forgot-password', forgotPassword);
 router.get('/me', verifyToken, getCurrentUser);
 router.put('/profile', verifyToken, updateProfile);
 

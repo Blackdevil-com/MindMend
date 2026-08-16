@@ -33,12 +33,11 @@ export const AdminInternships: React.FC = () => {
   }, []);
 
   const loadData = () => {
-    api.get('/internships/admin/applications')
+    api.get('/internships/applications')
       .then(data => setApplications(data.applications || []))
-      .catch(() => {
-        setApplications([
-          { id: 101, full_name: 'Alex Rivera', email: 'alex@mindmend.edu', mobile: '+91 98765 43210', domain: 'Full-Stack Web Development', college: 'Tech Institute', department: 'CS', year_of_study: '3rd Year', applied_at: '2026-08-01', status: 'shortlisted', admin_feedback: 'Qualified for round 2 technical review.' }
-        ] as any);
+      .catch(err => {
+        showToast(err.message || 'Failed to load internship applications', undefined, 'error');
+        setApplications([]);
       })
       .finally(() => setLoading(false));
   };
@@ -55,16 +54,40 @@ export const AdminInternships: React.FC = () => {
     if (!selectedApp) return;
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      showToast(`Application status updated to ${newStatus}! ✨`, undefined, 'success');
-      setReviewModalOpen(false);
-      setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, status: newStatus, admin_feedback: feedback } : a));
-    }, 600);
+    api.patch(`/internships/applications/${selectedApp.id}/status`, {
+      status: newStatus,
+      admin_feedback: feedback
+    })
+      .then(() => {
+        showToast(`Application status updated to ${newStatus}! ✨`, undefined, 'success');
+        setReviewModalOpen(false);
+        setApplications(prev => prev.map(a => a.id === selectedApp.id ? { ...a, status: newStatus, admin_feedback: feedback } : a));
+      })
+      .catch(err => {
+        showToast(err.message || 'Failed to update application status', undefined, 'error');
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   const handleExportCSV = () => {
-    showToast('Internship Applications exported to CSV 📄', undefined, 'success');
+    api.get('/internships/export/csv')
+      .then(csvText => {
+        const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `internship_applications_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('Internship Applications exported to CSV 📄', undefined, 'success');
+      })
+      .catch(err => {
+        showToast(err.message || 'Failed to export CSV', undefined, 'error');
+      });
   };
 
   const filteredApps = applications.filter(app =>

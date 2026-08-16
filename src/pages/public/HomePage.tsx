@@ -46,6 +46,51 @@ export const HomePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'live' | 'labs' | 'projects' | 'support'>('live');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
+  const tabContents = {
+    live: {
+      title: 'Live Interactive Sessions',
+      image: '/assets/live_student.jpg',
+      alt: 'Student Listening to Live Lecture',
+      bullets: [
+        'Engage directly with industry leaders during live interactive workshops and real-time code reviews.',
+        'Get immediate live Q&A clarification, collaborative coding sessions, and peer-to-peer breakout challenges.',
+        'Flexible scheduling with HD recorded catch-ups so you never miss a lecture.'
+      ]
+    },
+    labs: {
+      title: 'Interactive Hands-on Labs',
+      image: 'https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?auto=format&fit=crop&w=600&q=80',
+      alt: 'Hands-on Coding Lab Sandbox',
+      bullets: [
+        'Access cloud-hosted sandbox environments and virtual environments for hands-on exercises.',
+        'Run and validate your code instantly with automatic checkmarks and automated test suites.',
+        'Dozens of pre-configured labs covering SQL, React, Python, and system engineering.'
+      ]
+    },
+    projects: {
+      title: 'Real-World Production Projects',
+      image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
+      alt: 'Collaborating on Projects',
+      bullets: [
+        'Work on production-grade capstones and real-world microservices designed by tech leads.',
+        'Build a solid portfolio of git-based repositories with code reviews matching corporate workflows.',
+        'Publish your applications to production and present your work to potential hiring partners.'
+      ]
+    },
+    support: {
+      title: '1-on-1 Mentorship & Support',
+      image: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=600&q=80',
+      alt: '1-on-1 Mentoring Meeting',
+      bullets: [
+        'Get unblocked quickly with dedicated 1-on-1 private channels and code-review comments.',
+        'Receive personalized guidance on resume building, portfolio audits, and mock technical interviews.',
+        'Join weekly group mentoring circles to discuss placement strategies and career pathing.'
+      ]
+    }
+  };
+
+  const currentTabContent = tabContents[activeTab];
+
   useEffect(() => {
     Promise.all([
       api.get('/courses'),
@@ -184,7 +229,7 @@ export const HomePage: React.FC = () => {
                     ))}
                     <span className="text-xs font-bold text-slate-800 ml-1">4.9/5 overall rating</span>
                   </div>
-                  <p className="text-xs text-slate-500 font-medium">Trusted by 10,000+ Students worldwide</p>
+                  <p className="text-xs text-slate-500 font-medium">Trusted by 100+ Students</p>
                 </div>
               </div>
             </div>
@@ -206,8 +251,8 @@ export const HomePage: React.FC = () => {
                     <Play className="w-5 h-5 fill-white ml-0.5" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-slate-900">Watch Live Demo</p>
-                    <p className="text-[10px] text-slate-500">2 Min Overview</p>
+                    <p className="text-xs font-bold text-slate-900">Learn with us</p>
+                    <p className="text-[10px] text-slate-500">Start your journey now...</p>
                   </div>
                 </div>
               </div>
@@ -225,7 +270,7 @@ export const HomePage: React.FC = () => {
             <CurlySwirl className="w-12 h-5" />
           </div>
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-            Explore Over 100+ Online Courses
+            Explore Over Online Courses
           </h2>
           <p className="text-slate-500 text-sm max-w-xl mx-auto font-medium">
             Dive into specialized tracks meticulously built by tech leads and creative directors.
@@ -311,42 +356,25 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Active Tab Card Container */}
-        <div className="bg-gradient-to-r from-purple-50/80 via-white to-purple-50/80 rounded-3xl p-8 sm:p-12 border border-purple-100 shadow-lg">
+        <div className="bg-gradient-to-r from-purple-50/80 via-white to-purple-50/80 rounded-3xl p-8 sm:p-12 border border-purple-100 shadow-lg animate-fadeIn">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Description */}
             <div className="lg:col-span-7 space-y-6">
               <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900">
-                {activeTab === 'live' && 'Live Interactive Sessions'}
-                {activeTab === 'labs' && 'Interactive Hands-on Labs'}
-                {activeTab === 'projects' && 'Real-World Production Projects'}
-                {activeTab === 'support' && '1-on-1 Mentorship & Support'}
+                {currentTabContent.title}
               </h3>
 
               <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-purple-100 text-[#6A1B9A] flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">
-                    ✓
-                  </div>
-                  <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                    Engage directly with industry leaders during live interactive workshops and real-time code reviews.
-                  </p>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-purple-100 text-[#6A1B9A] flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">
-                    ✓
-                  </div>
-                  <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                    Get immediate live Q&A clarification, collaborative coding sessions, and peer-to-peer breakout challenges.
-                  </p>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-purple-100 text-[#6A1B9A] flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">
-                    ✓
-                  </div>
-                  <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                    Flexible scheduling with HD recorded catch-ups so you never miss a lecture.
-                  </p>
-                </li>
+                {currentTabContent.bullets.map((bullet, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-purple-100 text-[#6A1B9A] flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs">
+                      ✓
+                    </div>
+                    <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                      {bullet}
+                    </p>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -354,8 +382,8 @@ export const HomePage: React.FC = () => {
             <div className="lg:col-span-5">
               <div className="overflow-hidden rounded-2xl shadow-xl border-4 border-white">
                 <img
-                  src="/assets/live_student.jpg"
-                  alt="Student Listening to Live Lecture"
+                  src={currentTabContent.image}
+                  alt={currentTabContent.alt}
                   className="w-full h-[280px] object-cover"
                 />
               </div>
@@ -489,7 +517,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. TOP REVIEWED MENTORS */}
+      {/* 6. TOP REVIEWED MENTORS (Hidden for now)
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-2 text-[#6A1B9A]">
@@ -526,8 +554,9 @@ export const HomePage: React.FC = () => {
           ))}
         </div>
       </section>
+      */}
 
-      {/* 7. HEAR FROM OUR BELOVED STUDENTS (TESTIMONIALS) */}
+      {/* 7. HEAR FROM OUR BELOVED STUDENTS (TESTIMONIALS) (Hidden for now)
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-2 text-[#6A1B9A]">
@@ -571,6 +600,7 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+      */}
 
       {/* 8. CURIOUS MINDS: YOUR TOP QUESTIONS ANSWERED! (FAQ ACCORDION) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">

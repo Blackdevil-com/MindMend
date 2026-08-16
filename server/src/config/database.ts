@@ -315,6 +315,16 @@ export function initDatabase() {
       sent_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    -- Live Login Attendance table (tracks daily logins)
+    CREATE TABLE IF NOT EXISTS login_attendance (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      date DATE NOT NULL,
+      role TEXT NOT NULL,
+      UNIQUE(user_id, date),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
     -- Indexes for high-speed queries
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
     CREATE INDEX IF NOT EXISTS idx_students_user_id ON students(user_id);
@@ -328,6 +338,7 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_internship_apps_status ON internship_applications(status);
     CREATE INDEX IF NOT EXISTS idx_pending_staff_email ON pending_staff(email);
     CREATE INDEX IF NOT EXISTS idx_sent_emails_recipient ON sent_emails(recipient_email);
+    CREATE INDEX IF NOT EXISTS idx_login_attendance_user_date ON login_attendance(user_id, date);
   `);
   try {
     db.exec("ALTER TABLE tests ADD COLUMN marks_released INTEGER DEFAULT 0");
