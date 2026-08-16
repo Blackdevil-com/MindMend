@@ -64,12 +64,13 @@ export function verifyToken(req: AuthRequest, res: Response, next: NextFunction)
     } catch (jwtErr) {
       // Fallback: Decode unverified JWT / Firebase ID Token
       const unverified = jwt.decode(token) as any;
-      if (unverified && (unverified.email || unverified.user_id || unverified.sub)) {
+      if (unverified && (unverified.email || unverified.user_id || unverified.sub || unverified.id)) {
         const cleanEmail = (unverified.email || '').toLowerCase().trim();
+        const numericId = typeof unverified.id === 'number' ? unverified.id : (typeof unverified.user_id === 'number' ? unverified.user_id : 0);
 
         let userByEmailOrId = db.prepare(
-          'SELECT id, email, role, status FROM users WHERE email = ? OR id = ?'
-        ).get(cleanEmail, unverified.id || 0) as any;
+          'SELECT id, email, role, status FROM users WHERE (email = ? AND email != "") OR (id = ? AND id != 0)'
+        ).get(cleanEmail, numericId) as any;
 
         // Auto-provision Firebase Auth users into SQLite database if missing
         if (!userByEmailOrId && cleanEmail) {

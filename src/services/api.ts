@@ -39,11 +39,12 @@ export async function request<T = any>(
         window.location.pathname.startsWith('/staff') ||
         window.location.pathname.startsWith('/student');
 
-      // Only perform automatic hard redirect if explicitly notified of device displacement
-      if (isProtectedRoute && data.code === 'DEVICE_LOGOUT') {
+      // Clear stale token and redirect to login if unauthenticated on protected routes
+      if (isProtectedRoute) {
         localStorage.removeItem('mindmend_token');
         localStorage.removeItem('mindmend_user');
-        window.location.href = '/login?expired=device';
+        const reason = data.code === 'DEVICE_LOGOUT' ? 'device' : '1';
+        window.location.href = `/login?expired=${reason}`;
       }
     }
     throw new Error(data.error || data.message || `Request failed with status ${response.status}`);
