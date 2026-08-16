@@ -92,8 +92,11 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-bold text-slate-900">Phone Support</p>
-                  <p className="text-slate-500 mt-0.5">+91 93456 38887</p>
-                  <p className="text-slate-500">+91 79043 33423 | 9360700500</p>
+                  <div className="flex flex-col gap-1 mt-0.5">
+                    <a href="tel:+919345638887" className="text-slate-500 hover:text-[#6A1B9A] transition-colors">+91 93456 38887</a>
+                    <a href="tel:+917904333423" className="text-slate-500 hover:text-[#6A1B9A] transition-colors">+91 79043 33423</a>
+                    <a href="tel:+919360700500" className="text-slate-500 hover:text-[#6A1B9A] transition-colors">+91 93607 00500</a>
+                  </div>
                 </div>
               </div>
 

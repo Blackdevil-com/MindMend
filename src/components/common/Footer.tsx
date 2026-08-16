@@ -146,9 +146,13 @@ export const Footer: React.FC = () => {
                 <MapPin className="w-4 h-4 text-brand-400 mt-0.5 flex-shrink-0" />
                 <span>N0.629 KOSAPETTAI STREET, KADAMBANALLUR, RANIPET DISTRICT, TAMILNADU- 631151</span>
               </li>
-              <li className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-brand-400 flex-shrink-0" />
-                <span>+91 93456 38887 | +91 79043 33423 | 9360700500</span>
+              <li className="flex items-start gap-2.5">
+                <Phone className="w-4 h-4 text-brand-400 mt-0.5 flex-shrink-0" />
+                <div className="flex flex-col gap-1">
+                  <a href="tel:+919345638887" className="hover:text-brand-300 transition-colors">+91 93456 38887</a>
+                  <a href="tel:+917904333423" className="hover:text-brand-300 transition-colors">+91 79043 33423</a>
+                  <a href="tel:+919360700500" className="hover:text-brand-300 transition-colors">+91 93607 00500</a>
+                </div>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-brand-400 flex-shrink-0" />

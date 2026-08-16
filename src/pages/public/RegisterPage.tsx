@@ -51,6 +51,13 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
+    const cleanMobile = formData.mobile.replace(/\D/g, '');
+    const isMobileValid = cleanMobile.length === 10 || (cleanMobile.length === 12 && cleanMobile.startsWith('91'));
+    if (!isMobileValid) {
+      showToast('Please enter a valid 10-digit mobile number', 'warning');
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await registerStudent(formData);

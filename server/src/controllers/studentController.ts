@@ -278,9 +278,18 @@ export const getStudentDashboardStats = (req: AuthRequest, res: Response) => {
     `).all(student.id, student.id, student.id, student.id, batch?.id || null);
 
     // Attendance
-    const totalDays = db.prepare(`SELECT COUNT(*) as count FROM attendance WHERE student_id = ?`).get(student.id) as any;
-    const presentDays = db.prepare(`SELECT COUNT(*) as count FROM attendance WHERE student_id = ? AND status = 'present'`).get(student.id) as any;
-    const attendancePercentage = totalDays?.count > 0 ? Math.round((presentDays.count / totalDays.count) * 100) : 100;
+    const userRecord = db.prepare('SELECT created_at FROM users WHERE id = ?').get(req.user.id) as { created_at: string };
+    const signupDateStr = userRecord.created_at.split(' ')[0] || new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+    const signupDate = new Date(signupDateStr);
+    const todayDate = new Date(new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }));
+    const msDiff = todayDate.getTime() - signupDate.getTime();
+    const activeDaysCount = Math.max(1, Math.floor(msDiff / (1000 * 60 * 60 * 24)) + 1);
+
+    const loginDaysCount = db.prepare('SELECT COUNT(DISTINCT date) as count FROM login_attendance WHERE user_id = ?').get(req.user.id) as { count: number };
+    const attendancePercentage = Math.min(100, Math.round((loginDaysCount.count / activeDaysCount) * 100));
+
+    const loginDates = db.prepare('SELECT DISTINCT date FROM login_attendance WHERE user_id = ? ORDER BY date ASC').all(req.user.id) as { date: string }[];
+    const presentDatesList = loginDates.map(d => d.date);
 
     // Internship status
     const latestInternshipApp = db.prepare(`
@@ -312,6 +321,7 @@ export const getStudentDashboardStats = (req: AuthRequest, res: Response) => {
       courses,
       active_tests: activeTests,
       recent_announcements: announcements,
+      present_dates: presentDatesList,
     });
   } catch (error: any) {
     console.error('Error in getStudentDashboardStats:', error);

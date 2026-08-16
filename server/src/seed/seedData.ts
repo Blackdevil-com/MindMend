@@ -4,6 +4,17 @@ import { db, initDatabase } from '../config/database.js';
 export async function seedDatabase() {
   initDatabase();
 
+  // Skip seeding if data already exists
+  try {
+    const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number } | undefined;
+    if (userCount && userCount.count > 0) {
+      console.log('🌱 Database already contains data. Skipping reset seed.');
+      return;
+    }
+  } catch (e) {
+    console.error('Failed to check database user count during seed check:', e);
+  }
+
   console.log('🌱 Starting database seed with admin only...');
 
   // Disable foreign keys temporarily during cleanup

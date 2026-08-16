@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/common/Toast';
-import { CheckoutModal } from '../../components/common/CheckoutModal';
 import { VirtualClassroomModal } from '../../components/common/VirtualClassroomModal';
 import {
   GraduationCap,
@@ -37,7 +36,6 @@ export const StudentDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   // Modal triggers
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [classroomOpen, setClassroomOpen] = useState(false);
   const [activeClassTitle, setActiveClassTitle] = useState('Full-Stack React & Node.js Workshop');
 
@@ -49,8 +47,22 @@ export const StudentDashboard: React.FC = () => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
 
   // Interactive Calendar State
-  const [currentMonth, setCurrentMonth] = useState('November 2026');
-  const [selectedDay, setSelectedDay] = useState(14);
+  const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
+
+  const calendarYear = currentCalendarDate.getFullYear();
+  const calendarMonth = currentCalendarDate.getMonth();
+  const monthName = currentCalendarDate.toLocaleString('default', { month: 'long' });
+  const displayMonthYear = `${monthName} ${calendarYear}`;
+
+  const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+  const startDayOfWeek = new Date(calendarYear, calendarMonth, 1).getDay();
+
+  const handlePrevMonth = () => {
+    setCurrentCalendarDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  };
+  const handleNextMonth = () => {
+    setCurrentCalendarDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
 
   // Daily Schedule Timeline State (computed dynamically)
 
@@ -120,7 +132,7 @@ export const StudentDashboard: React.FC = () => {
 
   return (
     <div className="space-y-8 pb-12 select-none">
-      {/* 1. VIP Hero Banner (Matching Purple Light Image Layout) */}
+      {/* 1. Student Portal Hero Banner */}
       <div className="p-6 sm:p-8 rounded-3xl bg-purple-gradient text-white shadow-xl relative overflow-hidden">
         {/* Background Decorative Graphic */}
         <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/10 backdrop-blur-2xl rounded-l-full pointer-events-none hidden md:block"></div>
@@ -130,32 +142,17 @@ export const StudentDashboard: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-black px-3 py-1 rounded-full bg-white/20 text-white tracking-wider flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>UNLOCKED PREMIUM VIP</span>
+                <span>STUDENT PORTAL</span>
               </span>
-              <div className="flex items-center text-amber-300 gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-amber-300" />
-                ))}
-              </div>
             </div>
 
             <h1 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl leading-tight">
-              Unlock High-Level Access & Enterprise Skills 
+              Master Creative Skills & Launch Your Career
             </h1>
 
             <p className="text-xs sm:text-sm text-purple-100 opacity-95 leading-relaxed">
               Welcome back, <strong className="text-white">{student?.full_name || user?.full_name}</strong>! Access live virtual classes, interactive quizzes, and career placement mentorship.
             </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <button
-              onClick={() => setCheckoutOpen(true)}
-              className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-white text-[#6A1B9A] hover:bg-purple-50 font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2"
-            >
-              <Sparkles className="w-4 h-4 text-[#6A1B9A]" />
-              <span>Upgrade to VIP All-Access</span>
-            </button>
           </div>
         </div>
       </div>
@@ -347,12 +344,20 @@ export const StudentDashboard: React.FC = () => {
           {/* Widget 1: Interactive Mini Calendar */}
           <div className="p-6 rounded-3xl bg-white border border-purple-100 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="font-display font-black text-base text-slate-900">{currentMonth}</h4>
+              <h4 className="font-display font-black text-base text-slate-900">{displayMonthYear}</h4>
               <div className="flex items-center gap-1">
-                <button className="p-1 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-purple-50">
+                <button
+                  type="button"
+                  onClick={handlePrevMonth}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-purple-50"
+                >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button className="p-1 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-purple-50">
+                <button
+                  type="button"
+                  onClick={handleNextMonth}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-purple-50"
+                >
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
@@ -366,21 +371,35 @@ export const StudentDashboard: React.FC = () => {
                 </span>
               ))}
 
-              {[...Array(30)].map((_, i) => {
+              {/* Empty slots for starting day of the week */}
+              {[...Array(startDayOfWeek)].map((_, i) => (
+                <span key={`empty-${i}`} className="py-2"></span>
+              ))}
+
+              {/* Real calendar days */}
+              {[...Array(daysInMonth)].map((_, i) => {
                 const dayNum = i + 1;
-                const isSelected = dayNum === selectedDay;
+                const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                const isPresent = data?.present_dates?.includes(dateStr);
+                const isToday = new Date().toLocaleDateString('en-CA') === dateStr;
+
                 return (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedDay(dayNum)}
-                    className={`py-2 rounded-xl text-xs font-bold transition-all ${
-                      isSelected
-                        ? 'bg-[#6A1B9A] text-white shadow-glow-purple scale-105'
-                        : 'text-slate-700 hover:bg-purple-50 hover:text-[#6A1B9A]'
+                  <div
+                    key={`day-${dayNum}`}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all relative flex flex-col items-center justify-center border ${
+                      isPresent
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-250'
+                        : isToday
+                        ? 'bg-purple-50 text-[#6A1B9A] border-purple-200'
+                        : 'bg-white text-slate-700 border-transparent hover:bg-purple-50 hover:text-[#6A1B9A]'
                     }`}
+                    title={isPresent ? 'Present (Logged in)' : isToday ? 'Today' : ''}
                   >
-                    {dayNum}
-                  </button>
+                    <span>{dayNum}</span>
+                    {isPresent && (
+                      <span className="w-1 h-1 bg-emerald-500 rounded-full mt-0.5"></span>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -393,7 +412,9 @@ export const StudentDashboard: React.FC = () => {
                 <Clock className="w-4 h-4 text-[#6A1B9A]" />
                 <span>My Timetable</span>
               </h4>
-              <span className="text-[10px] font-bold text-[#6A1B9A] uppercase bg-purple-50 px-2 py-0.5 rounded border border-purple-100">Nov {selectedDay}</span>
+              <span className="text-[10px] font-bold text-[#6A1B9A] uppercase bg-purple-50 px-2 py-0.5 rounded border border-purple-100">
+                {new Date().toLocaleDateString('default', { month: 'short', day: 'numeric' })}
+              </span>
             </div>
 
             {/* Timeline Items */}
@@ -467,8 +488,7 @@ export const StudentDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* VIP Checkout Modal */}
-      <CheckoutModal isOpen={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
+      {/* VIP Checkout Modal removed */}
 
       {/* Virtual Classroom Video Call Modal */}
       <VirtualClassroomModal

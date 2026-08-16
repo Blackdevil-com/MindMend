@@ -17,6 +17,8 @@ import {
   Sparkles,
   PlusCircle,
   Video,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 export const StaffDashboard: React.FC = () => {
@@ -25,6 +27,24 @@ export const StaffDashboard: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [classroomOpen, setClassroomOpen] = useState(false);
+
+  // Dynamic Calendar State
+  const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
+
+  const calendarYear = currentCalendarDate.getFullYear();
+  const calendarMonth = currentCalendarDate.getMonth();
+  const monthName = currentCalendarDate.toLocaleString('default', { month: 'long' });
+  const displayMonthYear = `${monthName} ${calendarYear}`;
+
+  const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+  const startDayOfWeek = new Date(calendarYear, calendarMonth, 1).getDay();
+
+  const handlePrevMonth = () => {
+    setCurrentCalendarDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  };
+  const handleNextMonth = () => {
+    setCurrentCalendarDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
 
   useEffect(() => {
     api.get('/staff/dashboard-stats')
@@ -109,83 +129,151 @@ export const StaffDashboard: React.FC = () => {
 
         <div className="p-5 rounded-3xl bg-white border border-purple-100 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-500 font-semibold">Today's Attendance</span>
-            <CalendarCheck className="w-4 h-4 text-amber-500" />
+            <span className="text-xs text-slate-500 font-semibold">Attendance Rate</span>
+            <CalendarCheck className="w-4 h-4 text-cyan-600" />
           </div>
-          <p className="text-xs font-bold text-emerald-600 uppercase mt-1">
-            ✅ Recorded
-          </p>
+          <p className="font-display font-black text-2xl text-slate-900">{stats.attendance_percentage || 100}%</p>
         </div>
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-display font-black text-lg text-slate-900">Assigned Cohorts</h3>
-            <Link to="/staff/batches" className="text-xs font-bold text-[#6A1B9A] hover:underline">
-              Manage Roster
-            </Link>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* LEFT COLUMN (2 Cols) */}
+        <div className="lg:col-span-2 space-y-8">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display font-black text-lg text-slate-900">Assigned Cohorts</h3>
+              <Link to="/staff/batches" className="text-xs font-bold text-[#6A1B9A] hover:underline">
+                Manage Roster
+              </Link>
+            </div>
+
+            <div className="space-y-3">
+              {batches.map((b: any) => (
+                <div
+                  key={b.id}
+                  className="p-5 rounded-3xl bg-white border border-purple-100 hover:border-[#6A1B9A]/40 transition-all space-y-3 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-mono text-xs font-bold text-[#6A1B9A]">{b.name}</span>
+                      <h4 className="font-extrabold text-sm text-slate-900">{b.course_title}</h4>
+                    </div>
+                    <span className="px-3 py-1 rounded-full bg-[#F5EFFB] border border-purple-200 text-xs font-bold text-[#6A1B9A]">
+                      {b.student_count || 0} Students
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-500 flex items-center gap-1.5 font-mono">
+                    <Clock className="w-3.5 h-3.5 text-[#6A1B9A]" />
+                    {b.timing}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="space-y-3">
-            {batches.map((b: any) => (
-              <div
-                key={b.id}
-                className="p-5 rounded-3xl bg-white border border-purple-100 hover:border-[#6A1B9A]/40 transition-all space-y-3 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-mono text-xs font-bold text-[#6A1B9A]">{b.name}</span>
-                    <h4 className="font-extrabold text-sm text-slate-900">{b.course_title}</h4>
-                  </div>
-                  <span className="px-3 py-1 rounded-full bg-[#F5EFFB] border border-purple-200 text-xs font-bold text-[#6A1B9A]">
-                    {b.student_count || 0} Students
-                  </span>
-                </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display font-black text-lg text-slate-900">Created Test Benchmarks</h3>
+              <Link to="/staff/tests" className="text-xs font-bold text-[#6A1B9A] hover:underline">
+                Test Question Bank
+              </Link>
+            </div>
 
-                <p className="text-xs text-slate-500 flex items-center gap-1.5 font-mono">
-                  <Clock className="w-3.5 h-3.5 text-[#6A1B9A]" />
-                  {b.timing}
-                </p>
-              </div>
-            ))}
+            <div className="space-y-3">
+              {recentTests.map((t: any) => (
+                <div
+                  key={t.id}
+                  className="p-5 rounded-3xl bg-white border border-purple-100 space-y-2 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#F5EFFB] text-[#6A1B9A] border border-purple-200">
+                      {t.subject}
+                    </span>
+                    <span className="text-xs font-bold text-emerald-600">
+                      {t.completed_submissions || 0} Evaluated
+                    </span>
+                  </div>
+
+                  <h4 className="font-extrabold text-sm text-slate-900">{t.title}</h4>
+
+                  <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+                    <span>{t.duration_minutes} Mins • {t.total_marks} Marks</span>
+                    <Link to="/staff/results" className="text-[#6A1B9A] font-bold hover:underline">
+                      Scores →
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-display font-black text-lg text-slate-900">Created Test Benchmarks</h3>
-            <Link to="/staff/tests" className="text-xs font-bold text-[#6A1B9A] hover:underline">
-              Test Question Bank
-            </Link>
-          </div>
-
-          <div className="space-y-3">
-            {recentTests.map((t: any) => (
-              <div
-                key={t.id}
-                className="p-5 rounded-3xl bg-white border border-purple-100 space-y-2 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)]"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#F5EFFB] text-[#6A1B9A] border border-purple-200">
-                    {t.subject}
-                  </span>
-                  <span className="text-xs font-bold text-emerald-600">
-                    {t.completed_submissions || 0} Evaluated
-                  </span>
-                </div>
-
-                <h4 className="font-extrabold text-sm text-slate-900">{t.title}</h4>
-
-                <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
-                  <span>{t.duration_minutes} Mins • {t.total_marks} Marks</span>
-                  <Link to="/staff/results" className="text-[#6A1B9A] font-bold hover:underline">
-                    Scores →
-                  </Link>
-                </div>
+        {/* RIGHT COLUMN (1 Col) */}
+        <div className="space-y-8">
+          {/* Widget 1: Interactive Mini Calendar */}
+          <div className="p-6 rounded-3xl bg-white border border-purple-100 shadow-[0_4px_20px_-2px_rgba(106,27,154,0.05)] space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="font-display font-black text-base text-slate-900">{displayMonthYear}</h4>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={handlePrevMonth}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-purple-50"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextMonth}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-purple-50"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
-            ))}
+            </div>
+
+            {/* Calendar Days Grid */}
+            <div className="grid grid-cols-7 gap-1 text-center text-xs">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, i) => (
+                <span key={i} className="text-[10px] font-bold text-slate-400 uppercase py-1">
+                  {d}
+                </span>
+              ))}
+
+              {/* Empty slots for starting day of the week */}
+              {[...Array(startDayOfWeek)].map((_, i) => (
+                <span key={`empty-${i}`} className="py-2"></span>
+              ))}
+
+              {/* Real calendar days */}
+              {[...Array(daysInMonth)].map((_, i) => {
+                const dayNum = i + 1;
+                const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                const isPresent = data?.present_dates?.includes(dateStr);
+                const isToday = new Date().toLocaleDateString('en-CA') === dateStr;
+
+                return (
+                  <div
+                    key={`day-${dayNum}`}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all relative flex flex-col items-center justify-center border ${
+                      isPresent
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-250'
+                        : isToday
+                        ? 'bg-purple-50 text-[#6A1B9A] border-purple-200'
+                        : 'bg-white text-slate-700 border-transparent hover:bg-purple-50 hover:text-[#6A1B9A]'
+                    }`}
+                    title={isPresent ? 'Present (Logged in)' : isToday ? 'Today' : ''}
+                  >
+                    <span>{dayNum}</span>
+                    {isPresent && (
+                      <span className="w-1 h-1 bg-emerald-500 rounded-full mt-0.5"></span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

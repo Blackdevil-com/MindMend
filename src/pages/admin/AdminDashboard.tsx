@@ -57,12 +57,12 @@ export const AdminDashboard: React.FC = () => {
   const recentActivities = data?.recent_activities || [];
 
   const statCards = [
-    { label: 'Total Students', value: stats.total_students || 120, sub: `${stats.active_students || 110} Active`, icon: GraduationCap },
-    { label: 'Total Trainers', value: stats.total_staff || 8, sub: 'Active Instructors', icon: UserCheck },
-    { label: 'Active Courses', value: stats.active_courses || 5, sub: 'Enterprise Tracks', icon: BookOpen },
-    { label: 'Online Tests', value: stats.total_tests || 14, sub: `${stats.tests_completed || 180} Submissions`, icon: FileCheck2 },
-    { label: 'Internships', value: stats.internship_applications || 32, sub: '6 Tracks', icon: Briefcase },
-    { label: 'Average Score', value: `${stats.avg_student_score || 91}%`, sub: 'Institution Benchmark', icon: Award },
+    { label: 'Total Students', value: stats.total_students ?? 0, sub: `${stats.active_students ?? 0} Active`, icon: GraduationCap },
+    { label: 'Total Trainers', value: stats.total_staff ?? 0, sub: 'Active Instructors', icon: UserCheck },
+    { label: 'Active Courses', value: stats.active_courses ?? 0, sub: 'Enterprise Tracks', icon: BookOpen },
+    { label: 'Online Tests', value: stats.total_tests ?? 0, sub: `${stats.tests_completed ?? 0} Submissions`, icon: FileCheck2 },
+    { label: 'Internships', value: stats.internship_applications ?? 0, sub: '6 Tracks', icon: Briefcase },
+    { label: 'Average Score', value: `${stats.avg_student_score ?? 0}%`, sub: 'Institution Benchmark', icon: Award },
   ];
 
   return (

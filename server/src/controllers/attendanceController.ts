@@ -53,7 +53,7 @@ export const getBatchAttendanceForDate = (req: Request, res: Response) => {
     const { batchId } = req.params;
     const { date } = req.query;
 
-    const targetDate = (date as string) || new Date().toISOString().split('T')[0];
+    const targetDate = (date as string) || new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 
     const batch = db.prepare(`
       SELECT b.*, c.title as course_title, st.full_name as trainer_name

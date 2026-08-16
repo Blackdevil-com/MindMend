@@ -20,8 +20,8 @@ export const StaffAttendance: React.FC = () => {
   const [searchParams] = useSearchParams();
 
   const [batches, setBatches] = useState<any[]>([]);
-  const [selectedBatchId, setSelectedBatchId] = useState<string>('1');
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [selectedBatchId, setSelectedBatchId] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }));
   const [students, setStudents] = useState<any[]>([]);
   const [attendanceMap, setAttendanceMap] = useState<Record<number, { status: 'present' | 'absent' | 'leave'; remarks: string }>>({});
   const [loading, setLoading] = useState(true);
@@ -30,18 +30,17 @@ export const StaffAttendance: React.FC = () => {
   useEffect(() => {
     api.get('/batches')
       .then(data => {
-        const batchList = data.batches || [
-          { id: 1, name: 'FS-2026-A', course_title: 'Full-Stack Web Architecture' },
-          { id: 2, name: 'UI-2026-B', course_title: 'Envato UI/UX Design' },
-        ];
+        const batchList = data.batches || [];
         setBatches(batchList);
-        const queryBatch = searchParams.get('batch_id');
-        if (queryBatch) setSelectedBatchId(queryBatch);
+        if (batchList.length > 0) {
+          const queryBatch = searchParams.get('batch_id');
+          setSelectedBatchId(queryBatch || String(batchList[0].id));
+        }
       })
-      .catch(() => setBatches([
-        { id: 1, name: 'FS-2026-A', course_title: 'Full-Stack Web Architecture' },
-        { id: 2, name: 'UI-2026-B', course_title: 'Envato UI/UX Design' },
-      ]))
+      .catch(err => {
+        showToast(err.message || 'Failed to load batches', undefined, 'error');
+        setBatches([]);
+      })
       .finally(() => setLoading(false));
   }, [searchParams]);
 
@@ -49,11 +48,7 @@ export const StaffAttendance: React.FC = () => {
     if (selectedBatchId && selectedDate) {
       api.get(`/attendance/batch/${selectedBatchId}?date=${selectedDate}`)
         .then(data => {
-          const studentList = data.students || [
-            { id: 101, student_id: 'STU-2026-01', full_name: 'Alex Rivera', email: 'alex@mindmend.edu' },
-            { id: 102, student_id: 'STU-2026-02', full_name: 'Priya Sharma', email: 'priya@mindmend.edu' },
-            { id: 103, student_id: 'STU-2026-03', full_name: 'Michael Chen', email: 'michael@mindmend.edu' },
-          ];
+          const studentList = data.students || [];
           setStudents(studentList);
 
           const initialMap: Record<number, { status: 'present' | 'absent' | 'leave'; remarks: string }> = {};
@@ -65,18 +60,10 @@ export const StaffAttendance: React.FC = () => {
           });
           setAttendanceMap(initialMap);
         })
-        .catch(() => {
-          const fallbackList = [
-            { id: 101, student_id: 'STU-2026-01', full_name: 'Alex Rivera', email: 'alex@mindmend.edu' },
-            { id: 102, student_id: 'STU-2026-02', full_name: 'Priya Sharma', email: 'priya@mindmend.edu' },
-            { id: 103, student_id: 'STU-2026-03', full_name: 'Michael Chen', email: 'michael@mindmend.edu' },
-          ];
-          setStudents(fallbackList);
-          const initialMap: Record<number, { status: 'present' | 'absent' | 'leave'; remarks: string }> = {};
-          fallbackList.forEach(st => {
-            initialMap[st.id] = { status: 'present', remarks: '' };
-          });
-          setAttendanceMap(initialMap);
+        .catch(err => {
+          showToast(err.message || 'Failed to load batch students', undefined, 'error');
+          setStudents([]);
+          setAttendanceMap({});
         });
     }
   }, [selectedBatchId, selectedDate]);
@@ -105,10 +92,26 @@ export const StaffAttendance: React.FC = () => {
 
   const handleSave = async () => {
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
-      showToast(`Attendance saved successfully for ${selectedDate}! ✨`, undefined, 'success');
-    }, 800);
+    const records = students.map(st => ({
+      student_id: st.id,
+      status: attendanceMap[st.id]?.status || 'present',
+      remarks: attendanceMap[st.id]?.remarks || '',
+    }));
+
+    api.post('/attendance/mark', {
+      batch_id: Number(selectedBatchId),
+      date: selectedDate,
+      records,
+    })
+      .then(() => {
+        showToast(`Attendance saved successfully for ${selectedDate}! ✨`, undefined, 'success');
+      })
+      .catch(err => {
+        showToast(err.message || 'Failed to save attendance', undefined, 'error');
+      })
+      .finally(() => {
+        setSaving(false);
+      });
   };
 
   return (

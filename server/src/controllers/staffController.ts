@@ -45,6 +45,12 @@ export const createStaff = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
+    const cleanPhone = phone.replace(/\D/g, '');
+    const isPhoneValid = cleanPhone.length === 10 || (cleanPhone.length === 12 && cleanPhone.startsWith('91'));
+    if (!isPhoneValid) {
+      return res.status(400).json({ error: 'Please enter a valid 10-digit phone number' });
+    }
+
     const cleanEmail = email.toLowerCase().trim();
     const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(cleanEmail);
     if (existingUser) {
@@ -130,6 +136,14 @@ export const updateStaff = (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Staff member not found' });
     }
 
+    if (phone) {
+      const cleanPhone = phone.replace(/\D/g, '');
+      const isPhoneValid = cleanPhone.length === 10 || (cleanPhone.length === 12 && cleanPhone.startsWith('91'));
+      if (!isPhoneValid) {
+        return res.status(400).json({ error: 'Please enter a valid 10-digit phone number' });
+      }
+    }
+
     if (status && ['active', 'inactive'].includes(status)) {
       db.prepare('UPDATE users SET status = ? WHERE id = ?').run(status, staff.user_id);
     }
@@ -207,10 +221,24 @@ export const getStaffDashboardStats = (req: AuthRequest, res: Response) => {
     }
 
     // Today's attendance status
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
     const todayAttendanceCount = db.prepare(`
       SELECT COUNT(*) as count FROM attendance WHERE marked_by = ? AND date = ?
     `).get(req.user.id, today) as any;
+
+    // Staff daily login attendance percentage & dates
+    const userRecord = db.prepare('SELECT created_at FROM users WHERE id = ?').get(req.user.id) as { created_at: string };
+    const signupDateStr = userRecord.created_at.split(' ')[0] || new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+    const signupDate = new Date(signupDateStr);
+    const todayDate = new Date(new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }));
+    const msDiff = todayDate.getTime() - signupDate.getTime();
+    const activeDaysCount = Math.max(1, Math.floor(msDiff / (1000 * 60 * 60 * 24)) + 1);
+
+    const loginDaysCount = db.prepare('SELECT COUNT(DISTINCT date) as count FROM login_attendance WHERE user_id = ?').get(req.user.id) as { count: number };
+    const attendancePercentage = Math.min(100, Math.round((loginDaysCount.count / activeDaysCount) * 100));
+
+    const loginDates = db.prepare('SELECT DISTINCT date FROM login_attendance WHERE user_id = ? ORDER BY date ASC').all(req.user.id) as { date: string }[];
+    const presentDatesList = loginDates.map(d => d.date);
 
     return res.json({
       staff,
@@ -220,10 +248,12 @@ export const getStaffDashboardStats = (req: AuthRequest, res: Response) => {
         assigned_courses_count: courses.length,
         tests_created: tests.length,
         today_attendance_marked: (todayAttendanceCount?.count || 0) > 0,
+        attendance_percentage: attendancePercentage,
       },
       batches,
       courses,
       recent_tests: tests,
+      present_dates: presentDatesList,
     });
   } catch (error: any) {
     console.error('Error in getStaffDashboardStats:', error);
@@ -326,6 +356,12 @@ export const createPendingStaff = (req: Request, res: Response) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
+    const cleanPhone = phone.replace(/\D/g, '');
+    const isPhoneValid = cleanPhone.length === 10 || (cleanPhone.length === 12 && cleanPhone.startsWith('91'));
+    if (!isPhoneValid) {
+      return res.status(400).json({ error: 'Please enter a valid 10-digit phone number' });
+    }
+
     const cleanEmail = email.toLowerCase().trim();
     
     // Check users table
@@ -372,6 +408,14 @@ export const updatePendingStaff = (req: Request, res: Response) => {
     const pending = db.prepare('SELECT * FROM pending_staff WHERE id = ?').get(id) as any;
     if (!pending) {
       return res.status(404).json({ error: 'Pending staff member not found' });
+    }
+
+    if (phone) {
+      const cleanPhone = phone.replace(/\D/g, '');
+      const isPhoneValid = cleanPhone.length === 10 || (cleanPhone.length === 12 && cleanPhone.startsWith('91'));
+      if (!isPhoneValid) {
+        return res.status(400).json({ error: 'Please enter a valid 10-digit phone number' });
+      }
     }
 
     const cleanEmail = email ? email.toLowerCase().trim() : pending.email;
@@ -638,6 +682,13 @@ export const importStaffPreview = async (req: Request, res: Response) => {
       } else if (!email || !emailRegex.test(email)) {
         status = 'invalid';
         errorMsg = 'Invalid email format';
+      } else if (phone) {
+        const cleanPhone = phone.replace(/\D/g, '');
+        const isPhoneValid = cleanPhone.length === 10 || (cleanPhone.length === 12 && cleanPhone.startsWith('91'));
+        if (!isPhoneValid) {
+          status = 'invalid';
+          errorMsg = 'Invalid 10-digit phone number';
+        }
       } else {
         const dbUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
         const dbPending = db.prepare('SELECT id FROM pending_staff WHERE email = ?').get(email);
