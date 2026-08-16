@@ -11,6 +11,16 @@ export interface User {
   student_internal_id?: number;
   staff_internal_id?: number;
   full_name?: string;
+  mobile?: string;
+  phone?: string;
+  college_name?: string;
+  degree?: string;
+  department?: string;
+  year_of_study?: string;
+  bio?: string;
+  designation?: string;
+  linkedin_url?: string;
+  github_url?: string;
   profile?: any;
   unread_notifications?: number;
 }

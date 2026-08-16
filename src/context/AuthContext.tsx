@@ -124,6 +124,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           full_name: formData.full_name,
           role: 'student',
           student_id: `STU-2026-${Math.floor(Math.random() * 90 + 10)}`,
+          mobile: formData.mobile,
+          college_name: formData.college_name,
+          degree: formData.degree,
+          department: formData.department,
+          year_of_study: formData.year_of_study,
+          profile: {
+            full_name: formData.full_name,
+            email: formData.email,
+            mobile: formData.mobile,
+            college_name: formData.college_name,
+            degree: formData.degree,
+            department: formData.department,
+            year_of_study: formData.year_of_study,
+          },
         } as User;
 
         await setDoc(doc(db, 'users', fbUser.uid), newStudentUser);

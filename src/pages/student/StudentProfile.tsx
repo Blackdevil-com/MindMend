@@ -57,14 +57,14 @@ export const StudentProfile: React.FC = () => {
       const p = user.profile || {};
       setFormData({
         full_name: p.full_name || user.full_name || '',
-        email: user.email || '',
-        phone: p.phone || '',
-        mobile: p.mobile || '',
-        college_name: p.college_name || '',
-        bio: p.bio || '',
-        designation: p.designation || '',
-        linkedin_url: p.linkedin_url || '',
-        github_url: p.github_url || '',
+        email: user.email || p.email || '',
+        phone: p.phone || user.phone || '',
+        mobile: p.mobile || user.mobile || '',
+        college_name: p.college_name || user.college_name || '',
+        bio: p.bio || user.bio || '',
+        designation: p.designation || user.designation || '',
+        linkedin_url: p.linkedin_url || user.linkedin_url || '',
+        github_url: p.github_url || user.github_url || '',
         password: '',
         confirm_password: '',
       });

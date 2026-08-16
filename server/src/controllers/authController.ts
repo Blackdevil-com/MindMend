@@ -188,6 +188,19 @@ export const registerStudent = async (req: Request, res: Response) => {
       sessionId
     );
 
+    const studentProfile = {
+      id: studentInternalId,
+      user_id: userId,
+      student_id,
+      full_name: full_name.trim(),
+      email: email.toLowerCase().trim(),
+      mobile: mobile.trim(),
+      college_name: college_name.trim(),
+      degree: degree.trim(),
+      department: department.trim(),
+      year_of_study: year_of_study.trim(),
+    };
+
     return res.status(201).json({
       message: 'Student registration successful',
       token,
@@ -198,10 +211,12 @@ export const registerStudent = async (req: Request, res: Response) => {
         student_id,
         student_internal_id: studentInternalId,
         full_name: full_name.trim(),
+        mobile: mobile.trim(),
         college_name: college_name.trim(),
         degree: degree.trim(),
         department: department.trim(),
         year_of_study: year_of_study.trim(),
+        profile: studentProfile,
       },
     });
   } catch (error: any) {
@@ -295,6 +310,12 @@ export const login = async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
         full_name: fullName,
+        mobile: studentInfo?.mobile || staffInfo?.phone,
+        phone: staffInfo?.phone || studentInfo?.mobile,
+        college_name: studentInfo?.college_name,
+        degree: studentInfo?.degree,
+        department: studentInfo?.department,
+        year_of_study: studentInfo?.year_of_study,
         student_id: studentId,
         staff_id: staffId,
         student_internal_id: studentInternalId,
@@ -344,6 +365,12 @@ export const getCurrentUser = (req: AuthRequest, res: Response) => {
         student_internal_id: profile?.id,
         staff_internal_id: profile?.id,
         full_name: profile?.full_name || 'Administrator',
+        mobile: profile?.mobile || profile?.phone,
+        phone: profile?.phone || profile?.mobile,
+        college_name: profile?.college_name,
+        degree: profile?.degree,
+        department: profile?.department,
+        year_of_study: profile?.year_of_study,
         unread_notifications: unreadCount?.count || 0,
       },
     });
