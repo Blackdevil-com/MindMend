@@ -65,7 +65,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(data.user);
 
       if (identifier.includes('@')) {
-        signInWithEmailAndPassword(auth, identifier, password).catch(() => {});
+        signInWithEmailAndPassword(auth, identifier, password)
+          .then(userCred => {
+            if (data.user && userCred.user) {
+              setDoc(doc(db, 'users', userCred.user.uid), data.user, { merge: true }).catch(() => {});
+              setDoc(doc(db, 'students', userCred.user.uid), data.user, { merge: true }).catch(() => {});
+            }
+          })
+          .catch(() => {});
       }
 
       return data.user;
@@ -115,13 +122,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(data.token);
       setUser(data.user);
 
-      createUserWithEmailAndPassword(auth, formData.email, formData.password).catch(() => {});
+      // Create Firebase Auth user & save complete details in Firestore users and students collections
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        const fbUser = userCred.user;
+        await updateFirebaseProfile(fbUser, { displayName: formData.full_name });
+
+        const firestoreUserData = {
+          id: data.user.id,
+          user_id: data.user.id,
+          student_id: data.user.student_id,
+          full_name: formData.full_name,
+          email: formData.email,
+          mobile: formData.mobile,
+          phone: formData.mobile,
+          college_name: formData.college_name,
+          degree: formData.degree,
+          department: formData.department,
+          year_of_study: formData.year_of_study,
+          role: 'student',
+          status: 'active',
+          created_at: new Date().toISOString(),
+          profile: {
+            full_name: formData.full_name,
+            email: formData.email,
+            mobile: formData.mobile,
+            phone: formData.mobile,
+            college_name: formData.college_name,
+            degree: formData.degree,
+            department: formData.department,
+            year_of_study: formData.year_of_study,
+          },
+        };
+
+        await setDoc(doc(db, 'users', fbUser.uid), firestoreUserData, { merge: true });
+        await setDoc(doc(db, 'students', fbUser.uid), firestoreUserData, { merge: true });
+      } catch (fbError) {
+        console.warn('Firebase user creation / Firestore sync warning:', fbError);
+      }
+
       return data;
     } catch (apiErr: any) {
       // Fallback to Firebase registration if API fails
       try {
         const userCred = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
         const fbUser = userCred.user;
+        await updateFirebaseProfile(fbUser, { displayName: formData.full_name });
 
         const newStudentUser: User = {
           id: Date.now(),
@@ -130,6 +176,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           role: 'student',
           student_id: `STU-2026-${Math.floor(Math.random() * 90 + 10)}`,
           mobile: formData.mobile,
+          phone: formData.mobile,
           college_name: formData.college_name,
           degree: formData.degree,
           department: formData.department,
@@ -138,6 +185,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             full_name: formData.full_name,
             email: formData.email,
             mobile: formData.mobile,
+            phone: formData.mobile,
             college_name: formData.college_name,
             degree: formData.degree,
             department: formData.department,
@@ -145,7 +193,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           },
         } as User;
 
-        await setDoc(doc(db, 'users', fbUser.uid), newStudentUser);
+        await setDoc(doc(db, 'users', fbUser.uid), newStudentUser, { merge: true });
+        await setDoc(doc(db, 'students', fbUser.uid), newStudentUser, { merge: true });
         const fbToken = await fbUser.getIdToken();
 
         localStorage.setItem('mindmend_token', fbToken);
