@@ -13,6 +13,8 @@ import {
   Sparkles,
   KeyRound,
   Shield,
+  Lock,
+  AlertCircle,
 } from 'lucide-react';
 
 const LinkedinIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -71,7 +73,7 @@ export const StudentProfile: React.FC = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password && formData.password !== formData.confirm_password) {
       showToast('Passwords do not match', undefined, 'error');
       return;
@@ -101,11 +103,10 @@ export const StudentProfile: React.FC = () => {
     }
 
     setLoading(true);
-    
-    // Build update payload
+
+    // Build update payload - Immutable fields (email, mobile/phone, college_name) are omitted from edits
     const payload: any = {
       full_name: formData.full_name,
-      email: formData.email,
     };
 
     if (formData.password) {
@@ -113,13 +114,10 @@ export const StudentProfile: React.FC = () => {
     }
 
     if (user?.role === 'student') {
-      payload.mobile = formData.mobile;
-      payload.college_name = formData.college_name;
       payload.bio = formData.bio;
       payload.linkedin_url = formData.linkedin_url;
       payload.github_url = formData.github_url;
     } else if (user?.role === 'staff') {
-      payload.phone = formData.phone;
       payload.designation = formData.designation;
       payload.bio = formData.bio;
       payload.linkedin_url = formData.linkedin_url;
@@ -128,7 +126,13 @@ export const StudentProfile: React.FC = () => {
 
     api.put('/auth/profile', payload)
       .then(() => {
-        showToast('Profile & credentials updated successfully! ✨', undefined, 'success');
+        showToast(
+          formData.password
+            ? 'Profile & password updated! A confirmation email has been sent. 📧'
+            : 'Profile updated successfully! ✨',
+          undefined,
+          'success'
+        );
         // Clear password inputs
         setFormData(prev => ({
           ...prev,
@@ -148,9 +152,9 @@ export const StudentProfile: React.FC = () => {
       <div>
         <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 flex items-center gap-3">
           <User className="w-8 h-8 text-[#6A1B9A]" />
-          <span>Profile & Security Settings</span>
+          <span>Profile &amp; Security Settings</span>
         </h1>
-        <p className="text-xs sm:text-sm text-slate-505 font-medium mt-1">
+        <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
           Manage your account identity, social professional links, and credentials security.
         </p>
       </div>
@@ -167,8 +171,8 @@ export const StudentProfile: React.FC = () => {
               {formData.full_name}
             </h3>
             <div className="font-mono text-xs font-bold text-[#6A1B9A] px-3 py-1 rounded-full bg-[#F5EFFB] border border-purple-200 inline-block">
-              {user?.role === 'admin' 
-                ? 'System Executive' 
+              {user?.role === 'admin'
+                ? 'System Executive'
                 : user?.student_id || user?.staff_id || 'Account User'}
             </div>
             <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider pt-2">
@@ -182,7 +186,7 @@ export const StudentProfile: React.FC = () => {
                 <>
                   <div>
                     <span className="text-[10px] text-slate-400 uppercase font-bold block">College</span>
-                    <p className="font-extrabold text-slate-900">{formData.college_name || 'Not specified'}</p>
+                    <p className="font-extrabold text-slate-900">{formData.college_name || 'Official Institution'}</p>
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-400 uppercase font-bold block">Specialization</span>
@@ -259,43 +263,72 @@ export const StudentProfile: React.FC = () => {
                 />
               </div>
 
-              {/* Dynamically render Student or Staff specific fields */}
+              {/* Immutable Student Fields: Mobile Number & College Name */}
               {user?.role === 'student' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Mobile Number</label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.mobile}
-                      onChange={e => setFormData({ ...formData, mobile: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
-                    />
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold text-slate-700">Mobile Number</label>
+                      <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        <Lock className="w-3 h-3 text-slate-400" />
+                        <span>Immutable Record</span>
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="tel"
+                        disabled
+                        readOnly
+                        value={formData.mobile}
+                        className="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500 font-semibold cursor-not-allowed select-none"
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">College Name</label>
-                    <input
-                      type="text"
-                      value={formData.college_name}
-                      onChange={e => setFormData({ ...formData, college_name: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
-                    />
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold text-slate-700">College Name</label>
+                      <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        <Lock className="w-3 h-3 text-slate-400" />
+                        <span>Immutable Record</span>
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <Building className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        disabled
+                        readOnly
+                        value={formData.college_name}
+                        className="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500 font-semibold cursor-not-allowed select-none"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
 
+              {/* Immutable Staff Field: Trainer Phone Number */}
               {user?.role === 'staff' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Trainer Phone Number</label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.phone}
-                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
-                    />
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold text-slate-700">Trainer Phone Number</label>
+                      <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        <Lock className="w-3 h-3 text-slate-400" />
+                        <span>Immutable Record</span>
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="tel"
+                        disabled
+                        readOnly
+                        value={formData.phone}
+                        className="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500 font-semibold cursor-not-allowed select-none"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -358,23 +391,36 @@ export const StudentProfile: React.FC = () => {
               )}
             </div>
 
-            {/* Login Credentials and Password Section */}
+            {/* Login Credentials & Password Section */}
             <div className="pt-6 border-t border-purple-100 space-y-4">
               <h3 className="font-display font-black text-lg text-slate-900 pb-2 border-b border-purple-50 flex items-center gap-2">
                 <KeyRound className="w-5 h-5 text-[#6A1B9A]" />
-                <span>Account Login & Security</span>
+                <span>Account Login &amp; Security</span>
               </h3>
 
               <div className="space-y-4">
+                {/* Immutable Email Address Field */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Login Email / Username</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={e => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-[#F5EFFB] border border-purple-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#6A1B9A]"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-700">Login Email Address</label>
+                    <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                      <Lock className="w-3 h-3 text-slate-400" />
+                      <span>Immutable Record</span>
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="email"
+                      disabled
+                      readOnly
+                      value={formData.email}
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500 font-semibold cursor-not-allowed select-none"
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Email address is tied to your official student ID record and cannot be modified.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import logo from '../../assets/logo.png';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/common/Toast';
@@ -16,12 +16,18 @@ import {
   Sparkles,
   KeyRound,
   LogIn,
+  MonitorSmartphone,
+  Clock,
+  AlertTriangle,
 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const expiredParam = searchParams.get('expired');
 
   const [activeTab, setActiveTab] = useState<'student' | 'staff' | 'admin'>('student');
   const [identifier, setIdentifier] = useState('');
@@ -95,9 +101,35 @@ export const LoginPage: React.FC = () => {
             Sign In to MindMend Academy
           </h2>
           <p className="text-xs text-slate-500 font-medium">
-            Connected with Firebase Authentication & Cloud Database
+            Connected with Firebase Authentication &amp; Cloud Database
           </p>
         </div>
+
+        {/* Session expiry / device logout banners */}
+        {expiredParam === 'device' && (
+          <div className="flex items-start gap-3 px-4 py-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800">
+            <MonitorSmartphone className="w-5 h-5 mt-0.5 flex-shrink-0 text-amber-500" />
+            <div className="text-xs leading-relaxed">
+              <p className="font-bold mb-0.5">Signed out — another device signed in</p>
+              <p className="text-amber-700">
+                Your account was signed in on another device or browser. Sign in below to reactivate
+                your session on this device.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {expiredParam === '1' && (
+          <div className="flex items-start gap-3 px-4 py-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-800">
+            <Clock className="w-5 h-5 mt-0.5 flex-shrink-0 text-red-500" />
+            <div className="text-xs leading-relaxed">
+              <p className="font-bold mb-0.5">Session expired</p>
+              <p className="text-red-700">
+                Your session has expired. Please sign in again to continue where you left off.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Login Card Container */}
         <div className="p-7 rounded-3xl bg-white border border-purple-100 shadow-[0_4px_25px_-3px_rgba(106,27,154,0.08)] space-y-6">
@@ -222,7 +254,7 @@ export const LoginPage: React.FC = () => {
           <div className="pt-2 text-center text-xs text-slate-500 font-medium border-t border-purple-100">
             Need a Student Account?{' '}
             <Link to="/register" className="font-extrabold text-[#6A1B9A] hover:underline">
-              Create Firebase Student Account
+              Create Student Account
             </Link>
           </div>
         </div>

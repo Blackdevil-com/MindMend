@@ -1,4 +1,6 @@
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
 
 export async function request<T = any>(
   endpoint: string,
@@ -32,13 +34,16 @@ export async function request<T = any>(
 
   if (!response.ok) {
     if (response.status === 401) {
-      // Clear token if expired/invalid and not already on login page
-      if (window.location.pathname.startsWith('/admin') || 
-          window.location.pathname.startsWith('/staff') || 
-          window.location.pathname.startsWith('/student')) {
+      const isProtectedRoute =
+        window.location.pathname.startsWith('/admin') ||
+        window.location.pathname.startsWith('/staff') ||
+        window.location.pathname.startsWith('/student');
+
+      // Only perform automatic hard redirect if explicitly notified of device displacement
+      if (isProtectedRoute && data.code === 'DEVICE_LOGOUT') {
         localStorage.removeItem('mindmend_token');
         localStorage.removeItem('mindmend_user');
-        window.location.href = '/login?expired=1';
+        window.location.href = '/login?expired=device';
       }
     }
     throw new Error(data.error || data.message || `Request failed with status ${response.status}`);

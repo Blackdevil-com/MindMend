@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, Role } from '../types/index';
+import { User } from '../types/index';
 import { api } from '../services/api';
 import { auth, db } from '../config/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface AuthContextType {
@@ -29,17 +29,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const unsubscribe = () => {};
-    setIsLoading(false);
-
-    if (token && !user) {
+    // Check & sync user state on initial load
+    if (token) {
       refreshUser().finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);
     }
-
-    return () => unsubscribe();
-  }, [token]);
+  }, []);
 
   const refreshUser = async () => {
     try {
@@ -49,28 +45,99 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('mindmend_user', JSON.stringify(data.user));
       }
     } catch (err) {
-      console.warn('Failed to refresh user auth state:', err);
+      // Do not erase saved local user state on network/API failure so users stay logged in
+      console.warn('Backend refresh warning:', err);
     }
   };
 
   const login = async (identifier: string, password: string): Promise<User> => {
-    // Local SQLite API / Database Login
-    const data = await api.post('/auth/login', { identifier, password });
-    localStorage.setItem('mindmend_token', data.token);
-    localStorage.setItem('mindmend_user', JSON.stringify(data.user));
-    setToken(data.token);
-    setUser(data.user);
-    return data.user;
+    // 1. Try Backend API login first
+    try {
+      const data = await api.post('/auth/login', { identifier, password });
+      localStorage.setItem('mindmend_token', data.token);
+      localStorage.setItem('mindmend_user', JSON.stringify(data.user));
+      setToken(data.token);
+      setUser(data.user);
+
+      if (identifier.includes('@')) {
+        signInWithEmailAndPassword(auth, identifier, password).catch(() => {});
+      }
+
+      return data.user;
+    } catch (apiErr: any) {
+      console.warn('API login failed, trying Firebase Auth fallback:', apiErr.message);
+
+      // 2. Fallback to Firebase Auth if API login failed or is unreachable
+      if (identifier.includes('@')) {
+        try {
+          const userCred = await signInWithEmailAndPassword(auth, identifier, password);
+          const fbUser = userCred.user;
+
+          let userProfile: User;
+          const userDoc = await getDoc(doc(db, 'users', fbUser.uid));
+          if (userDoc.exists()) {
+            userProfile = userDoc.data() as User;
+          } else {
+            userProfile = {
+              id: Date.now(),
+              email: fbUser.email || identifier,
+              full_name: fbUser.displayName || identifier.split('@')[0],
+              role: identifier.includes('admin') ? 'admin' : identifier.includes('staff') ? 'staff' : 'student',
+              student_id: `STU-2026-${Math.floor(Math.random() * 90 + 10)}`,
+            } as User;
+            await setDoc(doc(db, 'users', fbUser.uid), userProfile);
+          }
+
+          const fbToken = await fbUser.getIdToken();
+          localStorage.setItem('mindmend_token', fbToken);
+          localStorage.setItem('mindmend_user', JSON.stringify(userProfile));
+          setToken(fbToken);
+          setUser(userProfile);
+          return userProfile;
+        } catch (fbErr: any) {
+          throw new Error(apiErr.message || fbErr.message || 'Login failed. Please verify credentials.');
+        }
+      }
+      throw apiErr;
+    }
   };
 
   const registerStudent = async (formData: any) => {
-    // Local SQLite API / Database Registration
-    const data = await api.post('/auth/register', formData);
-    localStorage.setItem('mindmend_token', data.token);
-    localStorage.setItem('mindmend_user', JSON.stringify(data.user));
-    setToken(data.token);
-    setUser(data.user);
-    return data;
+    try {
+      const data = await api.post('/auth/register', formData);
+      localStorage.setItem('mindmend_token', data.token);
+      localStorage.setItem('mindmend_user', JSON.stringify(data.user));
+      setToken(data.token);
+      setUser(data.user);
+
+      createUserWithEmailAndPassword(auth, formData.email, formData.password).catch(() => {});
+      return data;
+    } catch (apiErr: any) {
+      // Fallback to Firebase registration if API fails
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        const fbUser = userCred.user;
+
+        const newStudentUser: User = {
+          id: Date.now(),
+          email: formData.email,
+          full_name: formData.full_name,
+          role: 'student',
+          student_id: `STU-2026-${Math.floor(Math.random() * 90 + 10)}`,
+        } as User;
+
+        await setDoc(doc(db, 'users', fbUser.uid), newStudentUser);
+        const fbToken = await fbUser.getIdToken();
+
+        localStorage.setItem('mindmend_token', fbToken);
+        localStorage.setItem('mindmend_user', JSON.stringify(newStudentUser));
+        setToken(fbToken);
+        setUser(newStudentUser);
+        return { token: fbToken, user: newStudentUser };
+      } catch (fbErr: any) {
+        throw new Error(apiErr.message || fbErr.message || 'Registration failed.');
+      }
+    }
   };
 
   const logout = () => {

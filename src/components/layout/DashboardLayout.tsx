@@ -42,11 +42,12 @@ export const DashboardLayout: React.FC = () => {
     }
 
     const path = location.pathname;
-    if (path.startsWith('/admin') && user.role !== 'admin') {
+    const role = (user?.role || '').toLowerCase().trim();
+    if (path.startsWith('/admin') && role !== 'admin') {
       navigate('/login');
-    } else if (path.startsWith('/staff') && user.role !== 'staff' && user.role !== 'admin') {
+    } else if (path.startsWith('/staff') && role !== 'staff' && role !== 'admin') {
       navigate('/login');
-    } else if (path.startsWith('/student') && user.role !== 'student') {
+    } else if (path.startsWith('/student') && role !== 'student') {
       navigate('/login');
     }
 

@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { db } from '../config/database.js';
-import { generateToken, AuthRequest } from '../middleware/auth.js';
+import { generateToken, generateSessionId, AuthRequest } from '../middleware/auth.js';
 import { sendMail, compileStudentWelcomeTemplate } from '../services/emailService.js';
+import { validateWorkingEmail } from '../services/emailValidator.js';
 
 // Helper to generate the next unique Student ID: e.g. STU20260001
 export function generateNextStudentID(): string {
@@ -103,6 +104,12 @@ export const registerStudent = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
+    // Email syntax, disposable domain & live DNS MX record validation
+    const emailValidation = await validateWorkingEmail(email);
+    if (!emailValidation.valid) {
+      return res.status(400).json({ error: emailValidation.error || 'Invalid or non-working email address' });
+    }
+
     // Check if email already exists
     const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase().trim());
     if (existingUser) {
@@ -164,14 +171,22 @@ export const registerStudent = async (req: Request, res: Response) => {
       })
     }).catch(err => console.error('Failed to dispatch student welcome email:', err));
 
-    const token = generateToken({
-      id: userId,
-      email: email.toLowerCase().trim(),
-      role: 'student',
-      student_id,
-      student_internal_id: studentInternalId,
-      full_name: full_name.trim(),
-    });
+    const sessionId = generateSessionId();
+
+    // Store session ID in DB — invalidates any existing session on other devices/browsers
+    db.prepare('UPDATE users SET session_token = ? WHERE id = ?').run(sessionId, userId);
+
+    const token = generateToken(
+      {
+        id: userId,
+        email: email.toLowerCase().trim(),
+        role: 'student',
+        student_id,
+        student_internal_id: studentInternalId,
+        full_name: full_name.trim(),
+      },
+      sessionId
+    );
 
     return res.status(201).json({
       message: 'Student registration successful',
@@ -251,16 +266,24 @@ export const login = async (req: Request, res: Response) => {
       staffInternalId = staffInfo.id;
     }
 
-    const token = generateToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      student_id: studentId,
-      staff_id: staffId,
-      student_internal_id: studentInternalId,
-      staff_internal_id: staffInternalId,
-      full_name: fullName,
-    });
+    const sessionId = generateSessionId();
+
+    // Store session ID in DB — invalidates any existing session on other devices/browsers
+    db.prepare('UPDATE users SET session_token = ? WHERE id = ?').run(sessionId, user.id);
+
+    const token = generateToken(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        student_id: studentId,
+        staff_id: staffId,
+        student_internal_id: studentInternalId,
+        staff_internal_id: staffInternalId,
+        full_name: fullName,
+      },
+      sessionId
+    );
 
     recordUserDailyAttendance(user.id, user.role);
 
@@ -393,9 +416,39 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
         }
       }
 
-      // 2. If password is provided, update hash
+      // 2. If password is provided, update hash and send security notification email
       if (passwordHash) {
         db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId);
+
+        const userEmail = req.user!.email;
+        const userName = req.user!.full_name || 'User';
+
+        sendMail({
+          to: userEmail,
+          subject: '🔒 MindMend Security Alert: Password Updated Successfully',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <h2 style="color: #6A1B9A; margin: 0; font-size: 22px;">MindMend Academy</h2>
+                <p style="color: #64748b; font-size: 13px; margin-top: 4px;">Account Security Alert</p>
+              </div>
+              <p style="font-size: 14px; color: #1e293b;">Hello <strong>${userName}</strong>,</p>
+              <p style="font-size: 14px; color: #334155; line-height: 1.6;">
+                This email confirms that the password for your MindMend Academy account (<strong>${userEmail}</strong>) was successfully changed on <strong>${new Date().toLocaleString()}</strong>.
+              </p>
+              <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 12px; padding: 16px; margin: 20px 0;">
+                <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: bold;">⚠️ Did not request this change?</p>
+                <p style="margin: 4px 0 0 0; font-size: 12px; color: #b45309;">
+                  If you did not change your password, please contact MindMend Administration or Support immediately to secure your account.
+                </p>
+              </div>
+              <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;" />
+              <p style="color: #94a3b8; font-size: 11px; text-align: center; margin: 0;">
+                This is an automated security notice sent to protect your account. Please do not reply directly to this email.
+              </p>
+            </div>
+          `
+        }).catch(err => console.error('Failed to send password security email:', err));
       }
 
       // 3. Update profile tables

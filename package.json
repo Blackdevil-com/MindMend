@@ -7,11 +7,14 @@
     "server": "tsx server/src/server.ts",
     "client": "vite",
     "seed": "tsx server/src/seed/seedData.ts",
-    "build": "vite build"
+    "build": "vite build",
+    "render-build": "npm install && npm rebuild better-sqlite3",
+    "start": "node --import tsx/esm server/src/server.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "better-sqlite3": "^11.8.1",
+    "tsx": "^4.19.2",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
@@ -45,7 +48,6 @@
     "concurrently": "^9.1.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
-    "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vite": "^6.0.3"
   }
