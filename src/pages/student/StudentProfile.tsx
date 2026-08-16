@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/common/Toast';
+import { auth, db } from '../../config/firebase';
+import { updateProfile as updateFirebaseProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import {
   User,
   Mail,
@@ -125,7 +128,7 @@ export const StudentProfile: React.FC = () => {
     }
 
     api.put('/auth/profile', payload)
-      .then(() => {
+      .then(async (res: any) => {
         showToast(
           formData.password
             ? 'Profile & password updated! A confirmation email has been sent. 📧'
@@ -139,6 +142,29 @@ export const StudentProfile: React.FC = () => {
           password: '',
           confirm_password: '',
         }));
+
+        // Sync with Firebase Auth & Firestore if logged in via Firebase
+        if (auth.currentUser) {
+          try {
+            await updateFirebaseProfile(auth.currentUser, { displayName: formData.full_name });
+            await setDoc(
+              doc(db, 'users', auth.currentUser.uid),
+              {
+                full_name: formData.full_name,
+                profile: {
+                  full_name: formData.full_name,
+                  bio: formData.bio,
+                  linkedin_url: formData.linkedin_url,
+                  github_url: formData.github_url,
+                },
+              },
+              { merge: true }
+            );
+          } catch (fbSyncErr) {
+            console.warn('Firebase profile sync warning:', fbSyncErr);
+          }
+        }
+
         if (refreshUser) refreshUser();
       })
       .catch((err: any) => {

@@ -488,7 +488,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
                bio = COALESCE(?, bio),
                linkedin_url = ?,
                github_url = ?
-           WHERE user_id = ?`
+           WHERE user_id = ? OR email = ?`
         ).run(
           full_name ? full_name.trim() : null, 
           mobile ? mobile.trim() : null, 
@@ -496,7 +496,8 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
           bio ? bio.trim() : null, 
           linkedin_url ? linkedin_url.trim() : null,
           github_url ? github_url.trim() : null,
-          userId
+          userId,
+          req.user!.email.toLowerCase().trim()
         );
       } else if (req.user!.role === 'staff') {
         db.prepare(
@@ -507,7 +508,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
                bio = COALESCE(?, bio),
                linkedin_url = ?,
                github_url = ?
-           WHERE user_id = ?`
+           WHERE user_id = ? OR email = ?`
         ).run(
           full_name ? full_name.trim() : null, 
           phone ? phone.trim() : null, 
@@ -515,14 +516,38 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
           bio ? bio.trim() : null, 
           linkedin_url ? linkedin_url.trim() : null,
           github_url ? github_url.trim() : null,
-          userId
+          userId,
+          req.user!.email.toLowerCase().trim()
         );
       }
     });
 
     transaction();
 
-    return res.json({ message: 'Profile updated successfully' });
+    let updatedProfile: any = null;
+    if (req.user!.role === 'student') {
+      updatedProfile = db.prepare('SELECT * FROM students WHERE user_id = ? OR email = ?').get(userId, req.user!.email.toLowerCase().trim());
+    } else if (req.user!.role === 'staff') {
+      updatedProfile = db.prepare('SELECT * FROM staff WHERE user_id = ? OR email = ?').get(userId, req.user!.email.toLowerCase().trim());
+    }
+
+    const updatedUser = {
+      ...req.user,
+      full_name: updatedProfile?.full_name || (full_name ? full_name.trim() : req.user!.full_name),
+      mobile: updatedProfile?.mobile || updatedProfile?.phone,
+      phone: updatedProfile?.phone || updatedProfile?.mobile,
+      college_name: updatedProfile?.college_name,
+      degree: updatedProfile?.degree,
+      department: updatedProfile?.department,
+      year_of_study: updatedProfile?.year_of_study,
+      bio: updatedProfile?.bio || bio,
+      designation: updatedProfile?.designation || designation,
+      linkedin_url: updatedProfile?.linkedin_url || linkedin_url,
+      github_url: updatedProfile?.github_url || github_url,
+      profile: updatedProfile || req.user,
+    };
+
+    return res.json({ message: 'Profile updated successfully', user: updatedUser });
   } catch (error: any) {
     console.error('Error in updateProfile:', error);
     return res.status(400).json({ error: error.message || 'Failed to update profile' });

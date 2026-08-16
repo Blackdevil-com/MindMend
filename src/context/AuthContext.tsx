@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types/index';
 import { api } from '../services/api';
 import { auth, db } from '../config/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile as updateFirebaseProfile } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface AuthContextType {
@@ -43,6 +43,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (data.user) {
         setUser(data.user);
         localStorage.setItem('mindmend_user', JSON.stringify(data.user));
+
+        if (auth.currentUser && data.user.full_name) {
+          updateFirebaseProfile(auth.currentUser, { displayName: data.user.full_name }).catch(() => {});
+          setDoc(doc(db, 'users', auth.currentUser.uid), data.user, { merge: true }).catch(() => {});
+        }
       }
     } catch (err) {
       // Do not erase saved local user state on network/API failure so users stay logged in
